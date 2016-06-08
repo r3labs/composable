@@ -1,0 +1,9 @@
+---
+version: '2'
+services:
+  redis:
+    image: redis
+  nats:
+    image: nats
+  postgres:
+    image: postgres

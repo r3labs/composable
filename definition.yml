@@ -1,0 +1,21 @@
+---
+repos:
+  - name: config-store
+    path: git@github.com:r3labs/config-store.git
+    branch: docker
+    volumes:
+      - /etc/ernest/:/home/ernest/config
+    depends:
+      - nats
+
+  - name: all-all-fake-connector
+    path: git@github.com:r3labs/all-all-fake-connector.git
+    branch: docker
+    depends:
+      - config-store
+
+  - name: workflow-manager
+    path: git@github.com:r3labs/workflow-manager.git
+    branch: docker
+    depends:
+      - config-store

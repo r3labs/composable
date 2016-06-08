@@ -27,8 +27,10 @@ func GetOptions() (string, Options) {
 	opts := Options{}
 	mode := os.Args[1]
 
-	// Clear mode for parsing flags
-	os.Args = append(os.Args[:1], os.Args[1+1:]...)
+	if len(os.Args) > 2 && mode != "--help" {
+		// Clear mode for parsing flags
+		os.Args = append(os.Args[:1], os.Args[1+1:]...)
+	}
 
 	flag.StringVar(&opts.host, "h", "unix:///var/run/docker.sock", "Docker host to target. Defaults to current host")
 	flag.StringVar(&opts.home, "d", "/tmp/composable/", "Deployment directory where all repos are checked out")

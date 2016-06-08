@@ -16,7 +16,6 @@ type GitRepo struct {
 	Repo           string
 	Destination    string
 	deploymentPath string
-	commitID       string
 }
 
 // NewGitRepo sets up a git repo
@@ -103,5 +102,6 @@ func (g *GitRepo) CommitID() (string, error) {
 		return "", errors.New("Could not get git revision id")
 	}
 
-	return string(output), nil
+	id := string(output)
+	return strings.TrimSpace(id), nil
 }

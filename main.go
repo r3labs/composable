@@ -35,6 +35,8 @@ func syncRepo(repo *Repo, destination string, wg *sync.WaitGroup) {
 	if err != nil {
 		panic(err)
 	}
+
+	repo.gitRepo = g
 }
 
 func generateOutputFile(opts *Options) error {
@@ -71,8 +73,8 @@ func generateOutputFile(opts *Options) error {
 	}
 
 	for _, repo := range def.Repos {
-		commit, err := repo.gitRepo.CommitID()
-		if err != nil {
+		commit, cerr := repo.gitRepo.CommitID()
+		if cerr != nil {
 			return err
 		}
 

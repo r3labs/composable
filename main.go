@@ -62,11 +62,13 @@ func generateOutputFile(opts *Options) error {
 	wg.Wait()
 
 	// Build output definition
+	fmt.Println(" Connecting to Docker Host")
 	dh, err := NewDockerHost(opts.host)
 	if err != nil {
 		return err
 	}
 
+	fmt.Println(" Updating Docker Images Library")
 	err = dh.UpdateImages()
 	if err != nil {
 		return err
@@ -87,13 +89,14 @@ func generateOutputFile(opts *Options) error {
 			Dependencies: repo.Dependencies,
 		}
 
-		if dh.ImageExists(image) {
+		if !dh.ImageExists(image) {
 			s.Build = repo.gitRepo.deploymentPath
 		}
 
 		tpl.Services[repo.Name] = s
 	}
 
+	fmt.Println(" Writing Output")
 	err = tpl.WriteFile(opts.output)
 	if err != nil {
 		return err

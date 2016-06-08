@@ -43,3 +43,12 @@ func loadDefiniton(path string) (*Definition, error) {
 
 	return &d, nil
 }
+
+// OverrideBranch updates a repo's branch
+func (d *Definition) OverrideBranch(repo, branch string) {
+	for i := 0; i < len(d.Repos); i++ {
+		if d.Repos[i].Name == repo {
+			d.Repos[i].Branch = branch
+		}
+	}
+}

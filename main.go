@@ -50,6 +50,10 @@ func generateOutputFile(opts *Options) error {
 		return nil
 	}
 
+	for repo, branch := range opts.overrides {
+		def.OverrideBranch(repo, branch)
+	}
+
 	// Clone Repos
 	fmt.Println(" Syncing Repos")
 	var wg sync.WaitGroup

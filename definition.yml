@@ -4,18 +4,170 @@ repos:
     path: git@github.com:r3labs/config-store.git
     branch: docker
     volumes:
-      - /etc/ernest/:/home/ernest/config
-    depends:
+      - /etc/ernest/:/etc/ernest/
+    links:
       - nats
-
-  - name: all-all-fake-connector
-    path: git@github.com:r3labs/all-all-fake-connector.git
-    branch: docker
-    depends:
-      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+    entrypoint: /go/bin/config-store -config /etc/ernest/config.json
 
   - name: workflow-manager
     path: git@github.com:r3labs/workflow-manager.git
     branch: docker
+    links:
+      - nats
+      - redis
+      - postgres
     depends:
       - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: definition-mapper
+    path: git@github.com:r3labs/definition-mapper.git
+    branch: docker
+    links:
+      - nats
+      - redis
+      - postgres
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: router-adapter
+    path: git@github.com:r3labs/router-adapter.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: network-adapter
+    path: git@github.com:r3labs/network-adapter.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: instance-adapter
+    path: git@github.com:r3labs/instance-adapter.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: firewall-adapter
+    path: git@github.com:r3labs/firewall-adapter.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: nat-adapter
+    path: git@github.com:r3labs/nat-adapter.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: execution-adapter
+    path: git@github.com:r3labs/execution-adapter.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: router-builder
+    path: git@github.com:r3labs/router-builder.git
+    branch: docker
+    links:
+      - nats
+      - redis
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: network-builder
+    path: git@github.com:r3labs/network-builder.git
+    branch: docker
+    links:
+      - nats
+      - redis
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: instance-builder
+    path: git@github.com:r3labs/instance-builder.git
+    branch: docker
+    links:
+      - nats
+      - redis
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: firewall-builder
+    path: git@github.com:r3labs/firewall-builder.git
+    branch: docker
+    links:
+      - nats
+      - redis
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: nat-builder
+    path: git@github.com:r3labs/nat-builder.git
+    branch: docker
+    links:
+      - nats
+      - redis
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: execution-builder
+    path: git@github.com:r3labs/execution-builder.git
+    branch: docker
+    links:
+      - nats
+      - redis
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: all-all-fake-connector
+    path: git@github.com:r3labs/all-all-fake-connector.git
+    branch: docker
+    links:
+      - nats
+      - redis
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'

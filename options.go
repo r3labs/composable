@@ -6,6 +6,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -41,6 +42,11 @@ func GetOptions() (string, Options) {
 	opts.definition = flag.Arg(0)
 	opts.template = flag.Arg(1)
 	opts.overrides = GetOverrides(overrides)
+
+	_, err := os.Stat(opts.home)
+	if err != nil {
+		panic(fmt.Sprintf("Deployment directory '%s' does not exist!", opts.home))
+	}
 
 	return mode, opts
 }

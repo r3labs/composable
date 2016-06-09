@@ -18,12 +18,15 @@ type Composer struct {
 
 // Service definition
 type Service struct {
-	Image        string   `yaml:"image,omitempty"`
-	Build        string   `yaml:"build,omitempty"`
-	Ports        []string `yaml:"ports,omitempty"`
-	Volumes      []string `yaml:"volumes,omitempty"`
-	Links        []string `yaml:"links,omitempty"`
-	Dependencies []string `yaml:"depends_on,omitempty"`
+	Image        string            `yaml:"image,omitempty"`
+	Build        string            `yaml:"build,omitempty"`
+	Entrypoint   string            `yaml:"entrypoint,omitempty"`
+	Restart      string            `yaml:"restart,omitempty"`
+	Ports        []string          `yaml:"ports,omitempty"`
+	Volumes      []string          `yaml:"volumes,omitempty"`
+	Links        []string          `yaml:"links,omitempty"`
+	Dependencies []string          `yaml:"depends_on,omitempty"`
+	Environment  map[string]string `yaml:"environment,omitempty"`
 }
 
 // Load the composer template

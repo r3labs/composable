@@ -17,14 +17,17 @@ type Definition struct {
 
 // Repo definition
 type Repo struct {
-	Name         string   `yaml:"name"`
-	Path         string   `yaml:"path"`
-	Branch       string   `yaml:"branch"`
-	Volumes      []string `yaml:"volumes"`
-	Ports        []string `yaml:"ports"`
-	Links        []string `yaml:"link"`
-	Dependencies []string `yaml:"depends"`
-	gitRepo      *GitRepo `yaml:"-"`
+	Name         string            `yaml:"name"`
+	Path         string            `yaml:"path"`
+	Branch       string            `yaml:"branch"`
+	Entrypoint   string            `yaml:"entrypoint,omitempty"`
+	Restart      string            `yaml:"restart"`
+	Volumes      []string          `yaml:"volumes"`
+	Ports        []string          `yaml:"ports"`
+	Links        []string          `yaml:"links"`
+	Dependencies []string          `yaml:"depends"`
+	Environment  map[string]string `yaml:"environment"`
+	gitRepo      *GitRepo          `yaml:"-"`
 }
 
 // Load the input definition

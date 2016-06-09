@@ -55,7 +55,7 @@ func generateOutputFile(opts *Options) error {
 	}
 
 	// Clone Repos
-	fmt.Println(" Syncing Repos")
+	fmt.Println(" syncing repos")
 	var wg sync.WaitGroup
 	wg.Add(len(def.Repos))
 
@@ -66,13 +66,13 @@ func generateOutputFile(opts *Options) error {
 	wg.Wait()
 
 	// Build output definition
-	fmt.Println(" Connecting to Docker Host")
+	fmt.Println(" connecting to docker host")
 	dh, err := NewDockerHost(opts.host)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(" Updating Docker Images Library")
+	fmt.Println(" updating docker images library")
 	err = dh.UpdateImages()
 	if err != nil {
 		return err
@@ -87,10 +87,13 @@ func generateOutputFile(opts *Options) error {
 		image := fmt.Sprintf("%s:%s", repo.Name, commit)
 		s := Service{
 			Image:        image,
+			Entrypoint:   repo.Entrypoint,
+			Restart:      repo.Restart,
 			Volumes:      repo.Volumes,
 			Ports:        repo.Ports,
 			Links:        repo.Links,
 			Dependencies: repo.Dependencies,
+			Environment:  repo.Environment,
 		}
 
 		if !dh.ImageExists(image) {
@@ -100,7 +103,7 @@ func generateOutputFile(opts *Options) error {
 		tpl.Services[repo.Name] = s
 	}
 
-	fmt.Println(" Writing Output")
+	fmt.Println(" writing output")
 	err = tpl.WriteFile(opts.output)
 	if err != nil {
 		return err

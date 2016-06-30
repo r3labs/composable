@@ -37,6 +37,46 @@ repos:
       NATS_URI: 'nats://nats:4222'
       JWT_SECRET: 'test'
 
+  - name: user-store
+    path: git@github.com:ernestio/user-store.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: group-store
+    path: git@github.com:ernestio/group-store.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: datacenter-store
+    path: git@github.com:ernestio/datacenter-store.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
+  - name: service-store
+    path: git@github.com:ernestio/service-store.git
+    branch: docker
+    links:
+      - nats
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+
   - name: workflow-manager
     path: git@github.com:ernestio/workflow-manager.git
     branch: docker

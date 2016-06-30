@@ -226,3 +226,14 @@ repos:
       - config-store
     environment:
       NATS_URI: 'nats://nats:4222'
+
+  - name: all-all-fake-connector
+    path: git@github.com:ernestio/all-all-fake-connector.git
+    branch: docker
+    links:
+      - nats
+      - redis
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'

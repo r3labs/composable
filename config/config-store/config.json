@@ -21,7 +21,7 @@
     "timeout": 50000
   },
   "monitor": {
-    "host": "127.0.0.1",
+    "host": "",
     "port": "22000"
   },
   "connectors": {

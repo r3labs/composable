@@ -10,9 +10,11 @@ services:
     ports:
       - 4222:4222
   postgres:
-    image: postgres
+    image: r3labs/postgres
     ports:
       - 5432:5432
+    environment:
+      DB_NAME: users,groups,datacenters,services
   nginx:
     image: nginx
     volumes:

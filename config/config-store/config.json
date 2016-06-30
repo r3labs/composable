@@ -13,7 +13,7 @@
     ],
     "user": "",
     "password": "",
-    "url": "postgres://postgres"
+    "url": "postgres://postgres@postgres"
   },
   "logstash": {
     "hostname": "ernest.local",

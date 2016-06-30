@@ -4,7 +4,7 @@ repos:
     path: git@github.com:ernestio/config-store.git
     branch: docker
     volumes:
-      - /etc/ernest/:/etc/ernest/
+      - ./config/config-store/:/etc/ernest/
     links:
       - nats
     environment:
@@ -18,6 +18,19 @@ repos:
       - nats
     ports:
       - 8080:8080
+    depends:
+      - config-store
+    environment:
+      NATS_URI: 'nats://nats:4222'
+      JWT_SECRET: 'test'
+
+  - name: monit
+    path: git@github.com:ernestio/monit.git
+    branch: jwt
+    links:
+      - nats
+    ports:
+      - 22000:22000
     depends:
       - config-store
     environment:

@@ -2,7 +2,7 @@
 repos:
   - name: config-store
     path: git@github.com:ernestio/config-store.git
-    branch: docker
+    branch: develop
     volumes:
       - ./config/config-store/:/etc/ernest/
     links:
@@ -13,7 +13,7 @@ repos:
 
   - name: api-gateway
     path: git@github.com:ernestio/api-gateway.git
-    branch: docker
+    branch: develop
     links:
       - nats
     ports:
@@ -26,7 +26,7 @@ repos:
 
   - name: monit
     path: git@github.com:ernestio/monit.git
-    branch: jwt
+    branch: develop
     links:
       - nats
     ports:
@@ -39,7 +39,7 @@ repos:
 
   - name: user-store
     path: git@github.com:ernestio/user-store.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -49,7 +49,7 @@ repos:
 
   - name: group-store
     path: git@github.com:ernestio/group-store.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -59,7 +59,7 @@ repos:
 
   - name: datacenter-store
     path: git@github.com:ernestio/datacenter-store.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -69,7 +69,7 @@ repos:
 
   - name: service-store
     path: git@github.com:ernestio/service-store.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -79,7 +79,7 @@ repos:
 
   - name: workflow-manager
     path: git@github.com:ernestio/workflow-manager.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis
@@ -91,7 +91,7 @@ repos:
 
   - name: definition-mapper
     path: git@github.com:ernestio/definition-mapper.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis
@@ -103,7 +103,7 @@ repos:
 
   - name: router-adapter
     path: git@github.com:ernestio/router-adapter.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -113,7 +113,7 @@ repos:
 
   - name: network-adapter
     path: git@github.com:ernestio/network-adapter.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -123,7 +123,7 @@ repos:
 
   - name: instance-adapter
     path: git@github.com:ernestio/instance-adapter.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -133,7 +133,7 @@ repos:
 
   - name: firewall-adapter
     path: git@github.com:ernestio/firewall-adapter.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -143,7 +143,7 @@ repos:
 
   - name: nat-adapter
     path: git@github.com:ernestio/nat-adapter.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -153,7 +153,7 @@ repos:
 
   - name: execution-adapter
     path: git@github.com:ernestio/execution-adapter.git
-    branch: docker
+    branch: develop
     links:
       - nats
     depends:
@@ -163,7 +163,7 @@ repos:
 
   - name: router-builder
     path: git@github.com:ernestio/router-builder.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis
@@ -174,7 +174,7 @@ repos:
 
   - name: network-builder
     path: git@github.com:ernestio/network-builder.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis
@@ -185,7 +185,7 @@ repos:
 
   - name: instance-builder
     path: git@github.com:ernestio/instance-builder.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis
@@ -196,7 +196,7 @@ repos:
 
   - name: firewall-builder
     path: git@github.com:ernestio/firewall-builder.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis
@@ -207,7 +207,7 @@ repos:
 
   - name: nat-builder
     path: git@github.com:ernestio/nat-builder.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis
@@ -218,7 +218,7 @@ repos:
 
   - name: execution-builder
     path: git@github.com:ernestio/execution-builder.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis
@@ -229,7 +229,7 @@ repos:
 
   - name: all-all-fake-connector
     path: git@github.com:ernestio/all-all-fake-connector.git
-    branch: docker
+    branch: develop
     links:
       - nats
       - redis

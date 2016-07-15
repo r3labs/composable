@@ -18,7 +18,7 @@ func syncRepo(repo *Repo, destination string, wg *sync.WaitGroup) {
 	g := NewGitRepo(repo.Path, destination)
 	err := g.Clone()
 	if err != nil {
-		fmt.Println("Could not sync repo" + repo.Name)
+		fmt.Println("Could not sync repo " + repo.Name)
 		panic(err)
 	}
 
@@ -30,7 +30,7 @@ func syncRepo(repo *Repo, destination string, wg *sync.WaitGroup) {
 
 	err = g.Checkout(repo.Branch)
 	if err != nil {
-		fmt.Println("Could not checkout repo branch" + repo.Name + ":" + repo.Branch)
+		fmt.Println("Could not checkout repo branch " + repo.Name + ":" + repo.Branch)
 		panic(err)
 	}
 

@@ -13,10 +13,12 @@ import (
 func syncRepo(repo *Repo, destination string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
+	fmt.Println("  " + repo.Name)
 	// Clone the repo, checkout the branches
 	g := NewGitRepo(repo.Path, destination)
 	err := g.Clone()
 	if err != nil {
+		fmt.Println("Could not sync repo" + repo.Name)
 		panic(err)
 	}
 

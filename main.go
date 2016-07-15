@@ -30,6 +30,7 @@ func syncRepo(repo *Repo, destination string, wg *sync.WaitGroup) {
 
 	err = g.Checkout(repo.Branch)
 	if err != nil {
+		fmt.Println("Could not checkout repo branch" + repo.Name + ":" + repo.Branch)
 		panic(err)
 	}
 

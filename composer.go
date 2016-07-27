@@ -14,6 +14,7 @@ import (
 type Composer struct {
 	Version  string             `yaml:"version"`
 	Services map[string]Service `yaml:"services"`
+	Networks yaml.MapSlice      `yaml:"networks"`
 }
 
 // Service definition

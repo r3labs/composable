@@ -4,12 +4,12 @@ repos:
     path: git@github.com:ernestio/config-store.git
     branch: develop
     volumes:
-      - ./config/config-store/:/etc/ernest/
+      - /home/ubuntu/uat-agent/:/etc/ernest/
     links:
       - nats
     environment:
       NATS_URI: 'nats://nats:4222'
-    entrypoint: /go/bin/config-store -config /etc/ernest/config.json
+    entrypoint: /go/bin/config-store -config /etc/ernest/config.tmp.json
 
   - name: api-gateway
     path: git@github.com:ernestio/api-gateway.git

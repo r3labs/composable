@@ -41,6 +41,10 @@ func (g *GitRepo) Exists() bool {
 	return true
 }
 
+func (g *GitRepo) DeployPath() string {
+	return g.Destination + g.Name()
+}
+
 // Clone the repositort into the destination
 func (g *GitRepo) Clone() error {
 	g.deploymentPath = g.Destination + g.Name()

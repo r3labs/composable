@@ -41,6 +41,7 @@ func (g *GitRepo) Exists() bool {
 	return true
 }
 
+// DeployPath gives the full path to the project/repo
 func (g *GitRepo) DeployPath() string {
 	return g.Destination + g.Name()
 }

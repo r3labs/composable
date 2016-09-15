@@ -152,6 +152,13 @@ func buildAndPush(opts *Options, def *Definition) error {
 	fmt.Println(" building images")
 	for _, repo := range def.Repos {
 		name := fmt.Sprintf("%s/%s:%s", opts.org, repo.Name, opts.releasever)
+		uerr := dh.UpdateImages()
+		if uerr != nil {
+			return uerr
+		}
+		if dh.ImageExists(name) {
+			continue
+		}
 		fmt.Println("  " + name)
 		_, berr := dh.BuildImage(name, repo.gitRepo.DeployPath())
 		if berr != nil {
@@ -161,8 +168,8 @@ func buildAndPush(opts *Options, def *Definition) error {
 
 	fmt.Println(" uploading images")
 	for _, repo := range def.Repos {
-		fmt.Println("  " + name)
 		name := fmt.Sprintf("%s/%s:%s", opts.org, repo.Name, opts.releasever)
+		fmt.Println("  " + name)
 		_, uerr := dh.PushImage(name)
 		if uerr != nil {
 			return uerr

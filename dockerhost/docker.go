@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package main
+package dockerhost
 
 import (
 	"errors"
@@ -10,6 +10,9 @@ import (
 
 	"github.com/fsouza/go-dockerclient"
 )
+
+// OutputStream stores data from output streams
+type OutputStream []byte
 
 // DockerHost holds the docker client we need to talk to docker
 type DockerHost struct {
@@ -19,8 +22,18 @@ type DockerHost struct {
 	auth   *docker.AuthConfiguration
 }
 
-// NewDockerHost returns a new docker host
-func NewDockerHost(host string) (*DockerHost, error) {
+func (o *OutputStream) Write(data []byte) (int, error) {
+	*o = append(*o, data...)
+	return len(data), nil
+}
+
+// Output returns the
+func (o *OutputStream) Output() string {
+	return string(*o)
+}
+
+// New returns a new docker host
+func New(host string) (*DockerHost, error) {
 	d := DockerHost{Host: host}
 
 	client, err := docker.NewClient(host)

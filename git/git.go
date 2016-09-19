@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package main
+package git
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -107,6 +108,22 @@ func (r *Repo) CommitID() (string, error) {
 	return strings.TrimSpace(id), nil
 }
 
+func (r *Repo) Sync(branch string) error {
+	// Fetch correct branch and update
+	err := r.Fetch()
+	if err != nil {
+		return err
+	}
+
+	err = r.Checkout(branch)
+	if err != nil {
+		return fmt.Errorf("Could not checkout repo branch " + r.Name() + ":" + branch)
+	}
+
+	err = r.Pull()
+	return err
+}
+
 // Clone the repositort into the destination
 func (r *Repo) clone() error {
 	r.deploymentPath = r.Destination + r.Name()
@@ -118,7 +135,7 @@ func (r *Repo) clone() error {
 
 		_, err := cmd.Output()
 		if err != nil {
-			return errors.New("Could not clone repo")
+			return fmt.Errorf("Could not clone repo %s", r.Name())
 		}
 	}
 	return nil

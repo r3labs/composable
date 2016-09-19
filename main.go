@@ -21,27 +21,9 @@ func main() {
 
 	switch mode {
 	case "gen", "generate":
-		fmt.Println("Generating Output Definition")
-
-		def, err := cloneRepos(&opts)
-		handleErr(err)
-
-		err = generateOutputFile(&opts, def)
-		handleErr(err)
+		generate(&opts)
 	case "rel", "release":
-		opts.username, opts.password = login()
-
-		fmt.Println("")
-		fmt.Printf("Releasing Version %s\n", opts.releasever)
-
-		def, err := cloneRepos(&opts)
-		handleErr(err)
-
-		err = buildAndPush(&opts, def)
-		handleErr(err)
-
-		err = generateOutputFile(&opts, def)
-		handleErr(err)
+		release(&opts)
 	case "destroy":
 		fmt.Println("Destroying")
 	}

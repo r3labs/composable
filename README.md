@@ -20,6 +20,8 @@ make test
 
 ## Usage
 
+### Generating a docker-compose file for testing
+
 To generate a docker-compose file (default: docker-compose.yml), run the following command:
 
 ```
@@ -42,6 +44,21 @@ For further options, you can run:
 $ composable --help
 ```
 
+### Running a release
+
+To create a release and publish docker images to dockerhub, you can run:
+
+```
+$ composable release -org DOCKERORG -version VERSION definition.yml template.yml
+```
+
+This will:
+- Clone all repositories
+- Build all docker images, tagged as the release version
+- Upload all docker images to docker hub
+- Create a release docker-compose file with images tagged to the release version
+
+Please note, you will be asked for your docker credentials upon running this command
 
 ## Contributing
 

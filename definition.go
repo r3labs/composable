@@ -64,9 +64,10 @@ func (d *Definition) CloneRepos() error {
 	wg.Add(len(d.Repos))
 
 	for i := 0; i < len(d.Repos); i++ {
-		go func(wg *sync.WaitGroup) {
+		go func(wg *sync.WaitGroup, d *Definition, i int) {
 			defer wg.Done()
 
+			fmt.Printf("  %s\n", d.Repos[i].Name)
 			r, err := git.Clone(d.Repos[i].Path, d.opts.home)
 			if err != nil {
 				panic(err)
@@ -78,7 +79,7 @@ func (d *Definition) CloneRepos() error {
 			}
 
 			d.Repos[i].gitRepo = r
-		}(&wg)
+		}(&wg, d, i)
 	}
 
 	wg.Wait()
@@ -196,3 +197,4 @@ func (d *Definition) GenerateOutput() error {
 
 	return nil
 }
+

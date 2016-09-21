@@ -51,8 +51,14 @@ func LoadDefiniton(path string, opts *Options) (*Definition, error) {
 		return &d, err
 	}
 
-	for repo, branch := range d.opts.overrides {
-		d.OverrideBranch(repo, branch)
+	if opts.globalbranch != "" {
+		for _, repo := range d.Repos {
+			d.OverrideBranch(repo.Name, opts.globalbranch)
+		}
+	} else {
+		for repo, branch := range d.opts.overrides {
+			d.OverrideBranch(repo, branch)
+		}
 	}
 
 	return &d, nil
@@ -156,7 +162,8 @@ func (d *Definition) GenerateOutput() error {
 	if err != nil {
 		return err
 	}
-	dh.SetAuthCredentials(d.opts.username, d.opts.password)
+
+	dh.UpdateImages()
 
 	for _, repo := range d.Repos {
 		var image string
@@ -197,4 +204,3 @@ func (d *Definition) GenerateOutput() error {
 
 	return nil
 }
-

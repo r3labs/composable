@@ -14,18 +14,19 @@ import (
 
 // Options stores this applications configuration and options
 type Options struct {
-	home       string
-	host       string
-	output     string
-	definition string
-	template   string
-	releasever string
-	org        string
-	maxworkers int
-	username   string
-	password   string
-	isRelease  bool
-	overrides  map[string]string
+	home         string
+	host         string
+	output       string
+	definition   string
+	template     string
+	releasever   string
+	org          string
+	maxworkers   int
+	username     string
+	password     string
+	globalbranch string
+	isRelease    bool
+	overrides    map[string]string
 }
 
 // GetOptions reads options from cli arguments
@@ -44,6 +45,7 @@ func GetOptions() (string, Options) {
 	flag.StringVar(&opts.home, "d", "/tmp/composable/", "Deployment directory where all repos are checked out")
 	flag.StringVar(&opts.output, "o", "docker-compose.yml", "Output file for docker-compose")
 	flag.StringVar(&overrides, "b", "", "Override a repo's branch, specified by repo name, comma delimited")
+	flag.StringVar(&opts.globalbranch, "G", "", "Globally override all git branches")
 	flag.StringVar(&opts.org, "org", "", "Docker hub organisation target for release")
 	flag.StringVar(&opts.releasever, "version", "", "Version to release")
 	flag.IntVar(&opts.maxworkers, "w", runtime.NumCPU(), "number of build workers for a release, defaults to number of cpu's")

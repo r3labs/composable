@@ -20,6 +20,7 @@ type Options struct {
 	definition   string
 	template     string
 	releasever   string
+	devmode      bool
 	org          string
 	maxworkers   int
 	username     string
@@ -48,6 +49,7 @@ func GetOptions() (string, Options) {
 	flag.StringVar(&opts.globalbranch, "G", "", "Globally override all git branches")
 	flag.StringVar(&opts.org, "org", "", "Docker hub organisation target for release")
 	flag.StringVar(&opts.releasever, "version", "", "Version to release")
+	flag.BoolVar(&opts.devmode, "dev", false, "Development mode. Checks if there are local changes to any of the repos in the deployment directory. Forces a build if there are changes")
 	flag.IntVar(&opts.maxworkers, "w", runtime.NumCPU(), "number of build workers for a release, defaults to number of cpu's")
 	flag.Parse()
 

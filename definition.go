@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"sync"
+	"time"
 
 	"github.com/r3labs/composable/dockerhost"
 	"github.com/r3labs/composable/git"
@@ -175,6 +176,10 @@ func (d *Definition) GenerateOutput() error {
 
 		if d.opts.isRelease {
 			image = fmt.Sprintf("%s/%s:%s", d.opts.org, repo.Name, d.opts.releasever)
+		} else if d.opts.devmode && repo.gitRepo.HasChanges() {
+			t := time.Now()
+			year, month, day := t.Date()
+			image = fmt.Sprintf("%s:%s-%d%d%d-%d%d%d", repo.Name, commit, year, month, day, t.Hour(), t.Minute(), t.Second())
 		} else {
 			image = fmt.Sprintf("%s:%s", repo.Name, commit)
 		}

@@ -108,6 +108,17 @@ func (r *Repo) CommitID() (string, error) {
 	return strings.TrimSpace(id), nil
 }
 
+// HasChanges returns true if there are local changes to a repo
+func (r *Repo) HasChanges() bool {
+	cmd := exec.Command("git", "status")
+	cmd.Dir = r.deploymentPath
+
+	output, _ := cmd.Output()
+
+	return !strings.Contains(string(output), "nothing to commit, working tree clean")
+}
+
+// Sync the repo
 func (r *Repo) Sync(branch string) error {
 	// Fetch correct branch and update
 	err := r.Fetch()

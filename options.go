@@ -20,6 +20,7 @@ type Options struct {
 	definition   string
 	template     string
 	releasever   string
+	excludes     []string
 	devmode      bool
 	org          string
 	maxworkers   int
@@ -33,6 +34,7 @@ type Options struct {
 // GetOptions reads options from cli arguments
 func GetOptions() (string, Options) {
 	var overrides string
+	var excludes string
 
 	opts := Options{}
 	mode := os.Args[1]
@@ -46,6 +48,7 @@ func GetOptions() (string, Options) {
 	flag.StringVar(&opts.home, "d", "/tmp/composable/", "Deployment directory where all repos are checked out")
 	flag.StringVar(&opts.output, "o", "docker-compose.yml", "Output file for docker-compose")
 	flag.StringVar(&overrides, "b", "", "Override a repo's branch, specified by repo name, comma delimited")
+	flag.StringVar(&excludes, "exclude", "", "Ignore repos from the definition based on a matching value")
 	flag.StringVar(&opts.globalbranch, "G", "", "Globally override all git branches")
 	flag.StringVar(&opts.org, "org", "", "Docker hub organisation target for release")
 	flag.StringVar(&opts.releasever, "version", "", "Version to release")
@@ -56,6 +59,7 @@ func GetOptions() (string, Options) {
 	opts.definition = flag.Arg(0)
 	opts.template = flag.Arg(1)
 	opts.overrides = GetOverrides(overrides)
+	opts.excludes = strings.Split(excludes, ",")
 
 	switch mode {
 	case "rel", "release":

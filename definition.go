@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"strings"
 	"sync"
 	"time"
 
@@ -52,6 +53,12 @@ func LoadDefiniton(path string, opts *Options) (*Definition, error) {
 		return &d, err
 	}
 
+	// Ommit/Exclude repos
+	for _, repo := range opts.excludes {
+		d.ExcludeRepo(repo)
+	}
+
+	// Override branches
 	if opts.globalbranch != "" {
 		for _, repo := range d.Repos {
 			d.OverrideBranch(repo.Name, opts.globalbranch)
@@ -99,6 +106,20 @@ func (d *Definition) OverrideBranch(repo, branch string) {
 	for i := 0; i < len(d.Repos); i++ {
 		if d.Repos[i].Name == repo {
 			d.Repos[i].Branch = branch
+		}
+	}
+}
+
+// ExcludeRepo removes a repo from a list based on name
+func (d *Definition) ExcludeRepo(repo string) {
+	wildcard := strings.Contains(repo, "*")
+	if wildcard {
+		repo = strings.Replace(repo, "*", "", -1)
+	}
+
+	for i := len(d.Repos) - 1; i >= 0; i-- {
+		if wildcard && strings.Contains(d.Repos[i].Name, repo) || d.Repos[i].Name == repo {
+			d.Repos = append(d.Repos[:i], d.Repos[i+1:]...)
 		}
 	}
 }

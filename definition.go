@@ -63,10 +63,10 @@ func LoadDefiniton(path string, opts *Options) (*Definition, error) {
 		for _, repo := range d.Repos {
 			d.OverrideBranch(repo.Name, opts.globalbranch)
 		}
-	} else {
-		for repo, branch := range d.opts.overrides {
-			d.OverrideBranch(repo, branch)
-		}
+	}
+
+	for repo, branch := range d.opts.overrides {
+		d.OverrideBranch(repo, branch)
 	}
 
 	return &d, nil

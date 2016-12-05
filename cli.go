@@ -65,7 +65,10 @@ func generate(opts *Options) {
 
 func release(opts *Options) {
 	fmt.Printf("Releasing Version %s\n", opts.releasever)
-	opts.username, opts.password = login(opts.host)
+
+	if opts.username == "" && opts.password == "" {
+		opts.username, opts.password = login(opts.host)
+	}
 
 	def, err := LoadDefiniton(opts.definition, opts)
 	if err != nil {

@@ -54,6 +54,8 @@ func GetOptions() (string, Options) {
 	flag.StringVar(&opts.releasever, "version", "", "Version to release")
 	flag.BoolVar(&opts.devmode, "dev", false, "Development mode. Checks if there are local changes to any of the repos in the deployment directory. Forces a build if there are changes")
 	flag.IntVar(&opts.maxworkers, "w", runtime.NumCPU(), "number of build workers for a release, defaults to number of cpu's")
+	flag.StringVar(&opts.username, "u", "", "docker hub username, used only for release")
+	flag.StringVar(&opts.password, "p", "", "docker hub password, used only for release")
 	flag.Parse()
 
 	opts.definition = flag.Arg(0)

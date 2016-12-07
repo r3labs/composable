@@ -27,6 +27,7 @@ type Options struct {
 	username     string
 	password     string
 	globalbranch string
+	globalenv    string
 	isRelease    bool
 	overrides    map[string]string
 }
@@ -50,6 +51,7 @@ func GetOptions() (string, Options) {
 	flag.StringVar(&overrides, "b", "", "Override a repo's branch, specified by repo name, comma delimited")
 	flag.StringVar(&excludes, "exclude", "", "Ignore repos from the definition based on a matching value")
 	flag.StringVar(&opts.globalbranch, "G", "", "Globally override all git branches")
+	flag.StringVar(&opts.globalenv, "E", "", "Globally add extra environment options")
 	flag.StringVar(&opts.org, "org", "", "Docker hub organisation target for release")
 	flag.StringVar(&opts.releasever, "version", "", "Version to release")
 	flag.BoolVar(&opts.devmode, "dev", false, "Development mode. Checks if there are local changes to any of the repos in the deployment directory. Forces a build if there are changes")

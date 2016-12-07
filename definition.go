@@ -69,6 +69,17 @@ func LoadDefiniton(path string, opts *Options) (*Definition, error) {
 		d.OverrideBranch(repo, branch)
 	}
 
+	// Add extra environment
+	if opts.globalenv != "" {
+		envs := strings.Split(opts.globalenv, ",")
+		for _, repo := range d.Repos {
+			for _, env := range envs {
+				e := strings.Split(env, "=")
+				repo.Environment[e[0]] = e[1]
+			}
+		}
+	}
+
 	return &d, nil
 }
 

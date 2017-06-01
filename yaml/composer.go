@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package main
+package yaml
 
 import (
 	"io/ioutil"
@@ -18,6 +18,9 @@ type Composer struct {
 }
 
 // Service definition
+type Service map[string]interface{}
+
+/*
 type Service struct {
 	Image        string            `yaml:"image,omitempty"`
 	Build        string            `yaml:"build,omitempty"`
@@ -29,9 +32,10 @@ type Service struct {
 	Dependencies []string          `yaml:"depends_on,omitempty"`
 	Environment  map[string]string `yaml:"environment,omitempty"`
 }
+*/
 
 // Load the composer template
-func loadTemplate(path string) (*Composer, error) {
+func LoadTemplate(path string) (*Composer, error) {
 	var c Composer
 
 	data, err := ioutil.ReadFile(path)

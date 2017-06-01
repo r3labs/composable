@@ -2,11 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package dockerhost
+package host
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/fsouza/go-dockerclient"
 )
@@ -52,12 +51,10 @@ func (d *DockerHost) SetAuthCredentials(username, password string) error {
 		Password: password,
 	}
 
-	status, err := d.client.AuthCheck(d.auth)
+	_, err := d.client.AuthCheck(d.auth)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(status.Status)
 
 	return nil
 }
@@ -89,7 +86,7 @@ func (d *DockerHost) ImageExists(name string) bool {
 }
 
 // BuildImage builds a docker image and tags it
-func (d *DockerHost) BuildImage(name, path string) (string, error) {
+func (d *DockerHost) BuildImage(name, path string, nocache bool) (string, error) {
 	var ostream OutputStream
 
 	// Create a image from dockerfile
@@ -97,6 +94,7 @@ func (d *DockerHost) BuildImage(name, path string) (string, error) {
 		Name:         name,
 		ContextDir:   path,
 		OutputStream: &ostream,
+		NoCache:      nocache,
 	}
 
 	err := d.client.BuildImage(opts)

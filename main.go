@@ -7,24 +7,27 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/r3labs/composable/cmd"
 )
 
-func handleErr(err error) {
-	if err != nil {
+func main() {
+
+	if err := cmd.RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-}
 
-func main() {
-	mode, opts := GetOptions()
+	/*
+		mode, opts := GetOptions()
 
-	switch mode {
-	case "gen", "generate":
-		generate(&opts)
-	case "rel", "release":
-		release(&opts)
-	case "destroy":
-		fmt.Println("Destroying")
-	}
+		switch mode {
+		case "gen", "generate":
+			generate(&opts)
+		case "rel", "release":
+			release(&opts)
+		case "destroy":
+			fmt.Println("Destroying")
+		}
+	*/
 }

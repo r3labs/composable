@@ -2,46 +2,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package main
+package yaml
 
 import (
-	"fmt"
 	"io/ioutil"
 	"strings"
-	"sync"
-	"time"
 
-	"github.com/r3labs/composable/dockerhost"
-	"github.com/r3labs/composable/git"
+	"github.com/r3labs/composable/options"
+
 	"gopkg.in/yaml.v2"
 )
 
 // Definition of repos
 type Definition struct {
-	Repos []*Repo  `yaml:"repos"`
-	opts  *Options `yaml:"-"`
-}
-
-// Repo definition
-type Repo struct {
-	Name         string            `yaml:"name"`
-	Path         string            `yaml:"path"`
-	Branch       string            `yaml:"branch"`
-	Entrypoint   string            `yaml:"entrypoint,omitempty"`
-	Restart      string            `yaml:"restart"`
-	Volumes      []string          `yaml:"volumes"`
-	Ports        []string          `yaml:"ports"`
-	Links        []string          `yaml:"links"`
-	Dependencies []string          `yaml:"depends"`
-	Environment  map[string]string `yaml:"environment"`
-	gitRepo      *git.Repo         `yaml:"-"`
+	Repos []Repo `yaml:"repos"`
 }
 
 // LoadDefiniton the input definition
-func LoadDefiniton(path string, opts *Options) (*Definition, error) {
-	d := Definition{
-		opts: opts,
-	}
+func LoadDefiniton(path string, opts *options.Options) (*Definition, error) {
+	var d Definition
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -53,35 +32,66 @@ func LoadDefiniton(path string, opts *Options) (*Definition, error) {
 		return &d, err
 	}
 
+	d.overrides(opts)
+	d.environment(opts)
+
+	return &d, nil
+}
+
+func (d *Definition) environment(opts *options.Options) {
+	if opts.Build.GlobalEnv != "" {
+		envs := strings.Split(opts.Build.GlobalEnv, ",")
+		for _, repo := range d.Repos {
+			for _, env := range envs {
+				e := strings.Split(env, "=")
+				repo.SetEnv(e[0], e[1])
+			}
+		}
+	}
+}
+
+func (d *Definition) overrides(opts *options.Options) {
 	// Ommit/Exclude repos
-	for _, repo := range opts.excludes {
+	for _, repo := range opts.Build.Excludes {
 		d.ExcludeRepo(repo)
 	}
 
 	// Override branches
-	if opts.globalbranch != "" {
+	if opts.Git.GlobalBranch != "" {
 		for _, repo := range d.Repos {
-			d.OverrideBranch(repo.Name, opts.globalbranch)
+			d.OverrideBranch(repo.Name(), opts.Git.GlobalBranch)
 		}
 	}
 
-	for repo, branch := range d.opts.overrides {
+	for repo, branch := range opts.Build.Overrides {
 		d.OverrideBranch(repo, branch)
 	}
+}
 
-	// Add extra environment
-	if opts.globalenv != "" {
-		envs := strings.Split(opts.globalenv, ",")
-		for _, repo := range d.Repos {
-			for _, env := range envs {
-				e := strings.Split(env, "=")
-				repo.Environment[e[0]] = e[1]
-			}
+// OverrideBranch updates a repo's branch
+func (d *Definition) OverrideBranch(repo, branch string) {
+	for i := 0; i < len(d.Repos); i++ {
+		if d.Repos[i].Name() == repo {
+			d.Repos[i].SetBranch(branch)
 		}
 	}
-
-	return &d, nil
 }
+
+// ExcludeRepo removes a repo from a list based on name
+func (d *Definition) ExcludeRepo(repo string) {
+	wildcard := strings.Contains(repo, "*")
+	if wildcard {
+		repo = strings.Replace(repo, "*", "", -1)
+	}
+
+	for i := len(d.Repos) - 1; i >= 0; i-- {
+		if wildcard && strings.Contains(d.Repos[i].Name(), repo) || d.Repos[i].Name() == repo {
+			d.Repos = append(d.Repos[:i], d.Repos[i+1:]...)
+		}
+	}
+}
+
+/*
 
 // CloneRepos clones and checks out the correct branch for a repo
 func (d *Definition) CloneRepos() error {
@@ -112,28 +122,7 @@ func (d *Definition) CloneRepos() error {
 	return nil
 }
 
-// OverrideBranch updates a repo's branch
-func (d *Definition) OverrideBranch(repo, branch string) {
-	for i := 0; i < len(d.Repos); i++ {
-		if d.Repos[i].Name == repo {
-			d.Repos[i].Branch = branch
-		}
-	}
-}
 
-// ExcludeRepo removes a repo from a list based on name
-func (d *Definition) ExcludeRepo(repo string) {
-	wildcard := strings.Contains(repo, "*")
-	if wildcard {
-		repo = strings.Replace(repo, "*", "", -1)
-	}
-
-	for i := len(d.Repos) - 1; i >= 0; i-- {
-		if wildcard && strings.Contains(d.Repos[i].Name, repo) || d.Repos[i].Name == repo {
-			d.Repos = append(d.Repos[:i], d.Repos[i+1:]...)
-		}
-	}
-}
 
 // BuildImages builds all images defined on the definition
 func (d *Definition) BuildImages() error {
@@ -241,3 +230,5 @@ func (d *Definition) GenerateOutput() error {
 
 	return nil
 }
+
+*/

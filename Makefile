@@ -6,6 +6,8 @@ deps:
 	go get github.com/howeyc/gopass
 	go get github.com/fsouza/go-dockerclient
 	go get github.com/spf13/cobra
+	go get github.com/spf13/viper
+	go get github.com/mitchellh/go-homedir
 	go get github.com/docker/libcompose
 
 test:

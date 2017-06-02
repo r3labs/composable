@@ -6,8 +6,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
+	"path"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/r3labs/composable/cmd"
@@ -15,29 +15,23 @@ import (
 )
 
 func main() {
-
 	home, err := homedir.Dir()
 	if err != nil {
-		fmt.Println(home)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	cpath := path.Join(home, ".composable.yaml")
+	createConfig(cpath)
+
 	viper.AddConfigPath(home)
-	viper.SetConfigName(".composable.yml")
+	viper.SetConfigName(".composable")
+	viper.SetConfigType("yaml")
 
 	err = viper.ReadInConfig()
 	if err != nil {
-		fmt.Println(viper.ConfigFileUsed())
-		err = ioutil.WriteFile(viper.ConfigFileUsed(), []byte{}, 0644)
-		if err != nil {
-			os.Exit(1)
-		}
-
-		err = viper.ReadInConfig()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	if err := cmd.RootCmd.Execute(); err != nil {
@@ -45,16 +39,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	/*
-		mode, opts := GetOptions()
-
-		switch mode {
-		case "gen", "generate":
-			generate(&opts)
-		case "rel", "release":
-			release(&opts)
-		case "destroy":
-			fmt.Println("Destroying")
-		}
-	*/
+	writeConfig(viper.ConfigFileUsed(), viper.AllSettings())
 }

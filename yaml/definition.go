@@ -5,21 +5,28 @@
 package yaml
 
 import (
+	"fmt"
 	"io/ioutil"
 	"strings"
 
-	"github.com/r3labs/composable/options"
+	"github.com/r3labs/composable/git"
 
 	"gopkg.in/yaml.v2"
 )
 
 // Definition of repos
 type Definition struct {
-	Repos []Repo `yaml:"repos"`
+	Release struct {
+		Version string
+		Org     string
+	}
+	Template  string
+	BuildPath string
+	Repos     []Repo `yaml:"repos"`
 }
 
 // LoadDefiniton the input definition
-func LoadDefiniton(path string, opts *options.Options) (*Definition, error) {
+func LoadDefinition(path string) (*Definition, error) {
 	var d Definition
 
 	data, err := ioutil.ReadFile(path)
@@ -32,15 +39,12 @@ func LoadDefiniton(path string, opts *options.Options) (*Definition, error) {
 		return &d, err
 	}
 
-	d.overrides(opts)
-	d.environment(opts)
-
 	return &d, nil
 }
 
-func (d *Definition) environment(opts *options.Options) {
-	if opts.Build.GlobalEnv != "" {
-		envs := strings.Split(opts.Build.GlobalEnv, ",")
+func (d *Definition) Environment(environment string) {
+	if environment != "" {
+		envs := strings.Split(environment, ",")
 		for _, repo := range d.Repos {
 			for _, env := range envs {
 				e := strings.Split(env, "=")
@@ -50,20 +54,20 @@ func (d *Definition) environment(opts *options.Options) {
 	}
 }
 
-func (d *Definition) overrides(opts *options.Options) {
+func (d *Definition) Overrides(overrides, excludes, global string) {
 	// Ommit/Exclude repos
-	for _, repo := range opts.Build.Excludes {
+	for _, repo := range strings.Split(excludes, ",") {
 		d.ExcludeRepo(repo)
 	}
 
 	// Override branches
-	if opts.Git.GlobalBranch != "" {
+	if global != "" {
 		for _, repo := range d.Repos {
-			d.OverrideBranch(repo.Name(), opts.Git.GlobalBranch)
+			d.OverrideBranch(repo.Name(), global)
 		}
 	}
 
-	for repo, branch := range opts.Build.Overrides {
+	for repo, branch := range GetOverrides(overrides) {
 		d.OverrideBranch(repo, branch)
 	}
 }
@@ -91,38 +95,83 @@ func (d *Definition) ExcludeRepo(repo string) {
 	}
 }
 
-/*
+func GetOverrides(overrides string) map[string]string {
+	o := make(map[string]string)
 
-// CloneRepos clones and checks out the correct branch for a repo
-func (d *Definition) CloneRepos() error {
-	var wg sync.WaitGroup
-	wg.Add(len(d.Repos))
-
-	for i := 0; i < len(d.Repos); i++ {
-		go func(wg *sync.WaitGroup, d *Definition, i int) {
-			defer wg.Done()
-
-			fmt.Printf("  %s\n", d.Repos[i].Name)
-			r, err := git.Clone(d.Repos[i].Path, d.opts.home)
-			if err != nil {
-				panic(err)
+	if overrides != "" {
+		for _, data := range strings.Split(overrides, ",") {
+			x := strings.Split(data, ":")
+			if len(data) > 1 {
+				// name = repo branch
+				o[x[0]] = x[1]
 			}
-
-			err = r.Sync(d.Repos[i].Branch)
-			if err != nil {
-				panic(err)
-			}
-
-			d.Repos[i].gitRepo = r
-		}(&wg, d, i)
+		}
 	}
 
-	wg.Wait()
+	return o
+}
+
+// GenerateOutput creates a file from the definition and template.yml
+func (d *Definition) GenerateOutput(output string) error {
+	tpl, err := LoadTemplate(d.Template)
+	if err != nil {
+		return err
+	}
+
+	tpl.Version = "2"
+
+	for _, repo := range d.Repos {
+		var image string
+
+		r := git.Repo{
+			Repo:        repo.Name(),
+			Destination: d.BuildPath,
+		}
+
+		commit, cerr := r.CommitID()
+		if cerr != nil {
+			return err
+		}
+
+		if d.Release.Version != "" {
+			image = fmt.Sprintf("%s/%s:%s", d.Release.Org, repo.Name(), d.Release.Version)
+		} else {
+			image = fmt.Sprintf("%s:%s", repo.Name(), commit)
+		}
+
+		repo["image"] = image
+
+		if d.Release.Version == "" {
+			repo["build"] = r.DeployPath()
+		}
+
+		tpl.Services[repo.Name()] = copyRepo(repo)
+
+		// clean map of any unsupported field
+		delete(tpl.Services[repo.Name()], "name")
+		delete(tpl.Services[repo.Name()], "path")
+		delete(tpl.Services[repo.Name()], "branch")
+	}
+
+	err = tpl.WriteFile(output)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
+func copyRepo(r Repo) Repo {
+	rx := make(Repo)
 
+	for k, v := range r {
+		rx[k] = v
+	}
+
+	return rx
+}
+
+/*
 
 // BuildImages builds all images defined on the definition
 func (d *Definition) BuildImages() error {
@@ -173,62 +222,6 @@ func (d *Definition) UploadImages() error {
 	return nil
 }
 
-// GenerateOutput creates a file from the definition and template.yml
-func (d *Definition) GenerateOutput() error {
-	tpl, err := loadTemplate(d.opts.template)
-	if err != nil {
-		return err
-	}
 
-	dh, err := dockerhost.New(d.opts.host)
-	if err != nil {
-		return err
-	}
-
-	dh.UpdateImages()
-
-	for _, repo := range d.Repos {
-		var image string
-
-		commit, cerr := repo.gitRepo.CommitID()
-		if cerr != nil {
-			return err
-		}
-
-		if d.opts.isRelease {
-			image = fmt.Sprintf("%s/%s:%s", d.opts.org, repo.Name, d.opts.releasever)
-		} else if d.opts.devmode && repo.gitRepo.HasChanges() {
-			t := time.Now()
-			year, month, day := t.Date()
-			image = fmt.Sprintf("%s:%s-%d%d%d-%d%d%d", repo.Name, commit, year, month, day, t.Hour(), t.Minute(), t.Second())
-		} else {
-			image = fmt.Sprintf("%s:%s", repo.Name, commit)
-		}
-
-		s := Service{
-			Image:        image,
-			Entrypoint:   repo.Entrypoint,
-			Restart:      repo.Restart,
-			Volumes:      repo.Volumes,
-			Ports:        repo.Ports,
-			Links:        repo.Links,
-			Dependencies: repo.Dependencies,
-			Environment:  repo.Environment,
-		}
-
-		if !dh.ImageExists(image) {
-			s.Build = repo.gitRepo.DeployPath()
-		}
-
-		tpl.Services[repo.Name] = s
-	}
-
-	err = tpl.WriteFile(d.opts.output)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 */

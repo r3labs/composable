@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/build"
 	"github.com/spf13/cobra"
 )
 
@@ -15,9 +14,7 @@ var upCmd = &cobra.Command{
 	Use:   "up",
 	Short: "create a new environment",
 	Long:  `create a new environment`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("up called")
-	},
+	Run:   build.Up,
 }
 
 func init() {

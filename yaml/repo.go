@@ -29,6 +29,10 @@ func (r *Repo) Branch() string {
 	return safe.String((*r)["branch"])
 }
 
+func (r *Repo) URL() string {
+	return safe.String((*r)["path"])
+}
+
 func (r *Repo) SetEnv(k, v string) {
 	if (*r)["environment"] == nil {
 		(*r)["environment"] = make(map[string]string)

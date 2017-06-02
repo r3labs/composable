@@ -12,27 +12,10 @@ import (
 
 // Composer file
 type Composer struct {
-	Version  string             `yaml:"version"`
-	Services map[string]Service `yaml:"services"`
-	Networks yaml.MapSlice      `yaml:"networks"`
+	Version  string          `yaml:"version"`
+	Services map[string]Repo `yaml:"services"`
+	Networks yaml.MapSlice   `yaml:"networks"`
 }
-
-// Service definition
-type Service map[string]interface{}
-
-/*
-type Service struct {
-	Image        string            `yaml:"image,omitempty"`
-	Build        string            `yaml:"build,omitempty"`
-	Entrypoint   string            `yaml:"entrypoint,omitempty"`
-	Restart      string            `yaml:"restart,omitempty"`
-	Ports        []string          `yaml:"ports,omitempty"`
-	Volumes      []string          `yaml:"volumes,omitempty"`
-	Links        []string          `yaml:"links,omitempty"`
-	Dependencies []string          `yaml:"depends_on,omitempty"`
-	Environment  map[string]string `yaml:"environment,omitempty"`
-}
-*/
 
 // Load the composer template
 func LoadTemplate(path string) (*Composer, error) {

@@ -2,15 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package build
+package release
 
 import (
 	"fmt"
 
 	"github.com/howeyc/gopass"
+	"github.com/r3labs/composable/docker/host"
 )
 
-func Login(host string) (string, string) {
+func Login(hostname string) (string, string) {
 	var username string
 	var password string
 
@@ -22,7 +23,7 @@ func Login(host string) (string, string) {
 	pass, _ := gopass.GetPasswdMasked()
 	password = string(pass)
 
-	dh, err := host.New(host)
+	dh, err := host.New(hostname)
 	if err != nil {
 		panic(err)
 	}

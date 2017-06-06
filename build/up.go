@@ -6,6 +6,7 @@ package build
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/r3labs/composable/docker/compose"
@@ -14,8 +15,11 @@ import (
 )
 
 func Up(cmd *cobra.Command, args []string) {
+	var services []string
+
 	composeEnv, _ := cmd.Flags().GetString("compose-env")
 	composeFile, _ := cmd.Flags().GetString("compose-file")
+	dockerHost, _ := cmd.Flags().GetString("docker-host")
 
 	_, err := os.Stat(composeFile)
 	if err != nil {
@@ -32,18 +36,29 @@ func Up(cmd *cobra.Command, args []string) {
 		fatal(err)
 	}
 
-	var services []string
-	for k := range dc.Services {
-		services = append(services, k)
+	fmt.Println(composeEnv)
+	fmt.Println(dockerHost)
+
+	for k, v := range dc.Services {
+		if v.BuildPath() != "" {
+			services = append(services, k)
+		}
 	}
 
-	err = c.Build(services, false)
-	if err != nil {
-		fatal(err)
+	if c.Project != nil {
+
 	}
 
-	err = c.Up()
-	if err != nil {
-		fatal(err)
-	}
+	/*
+
+		err = c.Build(services, false)
+		if err != nil {
+			fatal(err)
+		}
+
+		err = c.Up()
+		if err != nil {
+			fatal(err)
+		}
+	*/
 }

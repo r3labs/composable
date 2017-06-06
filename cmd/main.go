@@ -5,6 +5,10 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -20,18 +24,39 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
-	//cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringP("compose-env", "e", "composable", "Name of the compose environment")
 	RootCmd.PersistentFlags().StringP("compose-file", "o", "docker-compose.yml", "Path to docker-compose.yml")
 	RootCmd.PersistentFlags().StringP("build-path", "P", "/tmp/composable", "Path to deploy git repos")
 	RootCmd.PersistentFlags().StringP("docker-org", "O", "", "Docker organisation used for releases")
 	RootCmd.PersistentFlags().StringP("docker-user", "U", "", "Docker user used for releases")
+	fmt.Println(viper.GetString("docker.host"))
+	fmt.Println(viper.ConfigFileUsed())
+	RootCmd.PersistentFlags().StringP("docker-host", "H", viper.GetString("docker.host"), "Docker host used for builds")
 	viper.BindPFlag("build.compose-env", RootCmd.PersistentFlags().Lookup("compose-env"))
 	viper.BindPFlag("build.compose-file", RootCmd.PersistentFlags().Lookup("compose-file"))
 	viper.BindPFlag("build.path", RootCmd.PersistentFlags().Lookup("build-path"))
-	viper.BindPFlag("docker.org", RootCmd.PersistentFlags().Lookup("docker-org"))
-	viper.BindPFlag("docker.user", RootCmd.PersistentFlags().Lookup("docker-user"))
 	viper.SetDefault("build.compose-env", "composable")
-	viper.SetDefault("build.compose-file", "/tmp/docker-compose.yml")
-	viper.SetDefault("build.path", "/tmp/composable")
+	viper.SetDefault("build.compose-file", "./docker-compose.yml")
+	viper.SetDefault("build.path", "./composable")
+	viper.SetDefault("docker.host", "unix:///var/run/docker.sock")
+	fmt.Println(viper.ConfigFileUsed())
+}
+
+func initConfig() {
+	home, err := homedir.Dir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	viper.AddConfigPath(home)
+	viper.SetConfigName(".composable")
+	viper.SetConfigType("yaml")
+
+	err = viper.ReadInConfig()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

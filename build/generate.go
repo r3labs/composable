@@ -16,7 +16,7 @@ func Generate(cmd *cobra.Command, args []string) {
 	environment, _ := cmd.Flags().GetString("environment")
 	overrides, _ := cmd.Flags().GetString("overrides")
 	excludes, _ := cmd.Flags().GetString("excludes")
-	global, _ := cmd.Flags().GetString("global")
+	global, _ := cmd.Flags().GetString("global-branch")
 	output, _ := cmd.Flags().GetString("compose-file")
 	buildpath, _ := cmd.Flags().GetString("build-path")
 	if buildpath == "" {

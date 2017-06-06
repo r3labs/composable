@@ -5,28 +5,16 @@ import "github.com/r3labs/composable/safe"
 // Repo definition
 type Repo map[string]interface{}
 
-/*
-type Repo struct {
-	Name         string            `yaml:"name"`
-	Path         string            `yaml:"path"`
-	Branch       string            `yaml:"branch"`
-	Entrypoint   string            `yaml:"entrypoint,omitempty"`
-	Restart      string            `yaml:"restart"`
-	Volumes      []string          `yaml:"volumes"`
-	Ports        []string          `yaml:"ports"`
-	Links        []string          `yaml:"links"`
-	Dependencies []string          `yaml:"depends"`
-	Environment  map[string]string `yaml:"environment"`
-	gitRepo      *git.Repo         `yaml:"-"`
-}
-*/
-
 func (r *Repo) Name() string {
 	return safe.String((*r)["name"])
 }
 
 func (r *Repo) Branch() string {
 	return safe.String((*r)["branch"])
+}
+
+func (r *Repo) BuildPath() string {
+	return safe.String((*r)["build"])
 }
 
 func (r *Repo) URL() string {

@@ -20,6 +20,7 @@ var generateCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(generateCmd)
 	generateCmd.Flags().StringP("overrides", "b", "", "Overides branch for specified repos")
+	// excludes
 	generateCmd.Flags().StringP("global-branch", "G", "", "Overides the branch for all repos, excluding ones specified in overides")
 	generateCmd.Flags().StringP("environment", "E", "", "Sets an environmental variable for all docker containers")
 }

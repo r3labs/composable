@@ -24,16 +24,6 @@ func main() {
 	cpath := path.Join(home, ".composable.yaml")
 	createConfig(cpath)
 
-	viper.AddConfigPath(home)
-	viper.SetConfigName(".composable")
-	viper.SetConfigType("yaml")
-
-	err = viper.ReadInConfig()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
 	if err := cmd.RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

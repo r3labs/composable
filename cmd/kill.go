@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/build"
 	"github.com/spf13/cobra"
 )
 
@@ -15,9 +14,7 @@ var killCmd = &cobra.Command{
 	Use:   "kill",
 	Short: "kill a service",
 	Long:  `kill a service`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("kill called")
-	},
+	Run:   build.Kill,
 }
 
 func init() {

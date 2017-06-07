@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/build"
 	"github.com/spf13/cobra"
 )
 
@@ -15,9 +14,7 @@ var rebuildCmd = &cobra.Command{
 	Use:   "rebuild",
 	Short: "rebuild a service",
 	Long:  `rebuild a service`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("rebuild called")
-	},
+	Run:   build.Rebuild,
 }
 
 func init() {

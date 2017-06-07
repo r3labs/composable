@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/build"
 	"github.com/spf13/cobra"
 )
 
@@ -15,9 +14,7 @@ var scaleCmd = &cobra.Command{
 	Use:   "scale",
 	Short: "scale a service",
 	Long:  `scale a service`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("scale called")
-	},
+	Run:   build.Scale,
 }
 
 func init() {

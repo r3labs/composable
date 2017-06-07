@@ -19,6 +19,7 @@ func Generate(cmd *cobra.Command, args []string) {
 	global, _ := cmd.Flags().GetString("global-branch")
 	output, _ := cmd.Flags().GetString("compose-file")
 	buildpath, _ := cmd.Flags().GetString("build-path")
+
 	if buildpath == "" {
 		fatal(errors.New("no build path specified"))
 	}

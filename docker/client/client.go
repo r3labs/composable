@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/docker/docker/api"
 	"github.com/docker/docker/api/types"
@@ -43,4 +44,30 @@ func (c *Client) HasImage(image string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+// DeleteImage ...
+func (c *Client) DeleteImage(image string) error {
+	opts := types.ImageRemoveOptions{
+		Force:         true,
+		PruneChildren: true,
+	}
+	_, err := c.dc.ImageRemove(context.Background(), image, opts)
+	return err
+}
+
+// CreateImage ...
+func (c *Client) BuildImage(name, path string) error {
+	buildContext, err := os.Open(path)
+	defer buildContext.Close()
+	if err != nil {
+		return err
+	}
+
+	opts := types.ImageBuildOptions{
+		Tags: []string{name},
+	}
+
+	_, err = c.dc.ImageBuild(context.Background(), buildContext, opts)
+	return err
 }

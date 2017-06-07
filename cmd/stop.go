@@ -9,15 +9,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// logsCmd represents the logs command
-var logsCmd = &cobra.Command{
-	Use:   "logs",
-	Short: "show compose logs",
-	Long:  `show compose logs`,
-	Run:   build.Logs,
+// stopCmd represents the stop command
+var stopCmd = &cobra.Command{
+	Use:   "stop",
+	Short: "stop a service",
+	Long:  `stop a service`,
+	Run:   build.Stop,
 }
 
 func init() {
-	RootCmd.AddCommand(logsCmd)
-	logsCmd.Flags().BoolP("follow", "f", false, "Follows the output of all specified containers")
+	RootCmd.AddCommand(stopCmd)
 }

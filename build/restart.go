@@ -8,18 +8,14 @@ import (
 	"errors"
 	"os"
 
-	"github.com/r3labs/composable/docker/client"
 	"github.com/r3labs/composable/docker/compose"
 	"github.com/r3labs/composable/yaml"
 	"github.com/spf13/cobra"
 )
 
-func Up(cmd *cobra.Command, args []string) {
-	var services []string
-
+func Restart(cmd *cobra.Command, services []string) {
 	composeEnv, _ := cmd.Flags().GetString("compose-env")
 	composeFile, _ := cmd.Flags().GetString("compose-file")
-	dockerHost, _ := cmd.Flags().GetString("docker-host")
 
 	_, err := os.Stat(composeFile)
 	if err != nil {
@@ -36,28 +32,18 @@ func Up(cmd *cobra.Command, args []string) {
 		fatal(err)
 	}
 
-	cli, err := client.New(dockerHost)
+	if len(services) < 1 {
+		for s := range dc.Services {
+			services = append(services, s)
+		}
+	}
+
+	err = c.Stop(services)
 	if err != nil {
 		fatal(err)
 	}
 
-	for k, v := range dc.Services {
-		exists, err := cli.HasImage(v.Image())
-		if err != nil {
-			fatal(err)
-		}
-
-		if v.BuildPath() != "" && !exists {
-			services = append(services, k)
-		}
-	}
-
-	err = c.Build(services, false)
-	if err != nil {
-		fatal(err)
-	}
-
-	err = c.Up()
+	err = c.Start(services)
 	if err != nil {
 		fatal(err)
 	}

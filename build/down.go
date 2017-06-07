@@ -8,27 +8,18 @@ import (
 	"errors"
 	"os"
 
-	"github.com/r3labs/composable/docker/client"
 	"github.com/r3labs/composable/docker/compose"
-	"github.com/r3labs/composable/yaml"
 	"github.com/spf13/cobra"
 )
 
-func Up(cmd *cobra.Command, args []string) {
-	var services []string
-
+func Down(cmd *cobra.Command, args []string) {
 	composeEnv, _ := cmd.Flags().GetString("compose-env")
 	composeFile, _ := cmd.Flags().GetString("compose-file")
-	dockerHost, _ := cmd.Flags().GetString("docker-host")
+	clean, _ := cmd.Flags().GetBool("clean")
 
 	_, err := os.Stat(composeFile)
 	if err != nil {
 		fatal(errors.New("could not locate docker-compose.yml"))
-	}
-
-	dc, err := yaml.LoadTemplate(composeFile)
-	if err != nil {
-		fatal(err)
 	}
 
 	c, err := compose.New(composeEnv, composeFile)
@@ -36,28 +27,7 @@ func Up(cmd *cobra.Command, args []string) {
 		fatal(err)
 	}
 
-	cli, err := client.New(dockerHost)
-	if err != nil {
-		fatal(err)
-	}
-
-	for k, v := range dc.Services {
-		exists, err := cli.HasImage(v.Image())
-		if err != nil {
-			fatal(err)
-		}
-
-		if v.BuildPath() != "" && !exists {
-			services = append(services, k)
-		}
-	}
-
-	err = c.Build(services, false)
-	if err != nil {
-		fatal(err)
-	}
-
-	err = c.Up()
+	err = c.Down(clean)
 	if err != nil {
 		fatal(err)
 	}

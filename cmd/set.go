@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/config"
 	"github.com/spf13/cobra"
 )
 
@@ -15,9 +14,7 @@ var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "set configuration options",
 	Long:  `set configuration options`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("set called")
-	},
+	Run:   config.Set,
 }
 
 func init() {

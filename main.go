@@ -7,27 +7,17 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
 
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/r3labs/composable/cmd"
+	"github.com/r3labs/composable/config"
 	"github.com/spf13/viper"
 )
 
 func main() {
-	home, err := homedir.Dir()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	cpath := path.Join(home, ".composable.yaml")
-	createConfig(cpath)
-
 	if err := cmd.RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	writeConfig(viper.ConfigFileUsed(), viper.AllSettings())
+	config.WriteConfig(viper.ConfigFileUsed(), viper.AllSettings())
 }

@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/build"
 	"github.com/spf13/cobra"
 )
 
@@ -15,9 +14,7 @@ var restartCmd = &cobra.Command{
 	Use:   "restart",
 	Short: "restart a service",
 	Long:  `restart a service`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("restart called")
-	},
+	Run:   build.Restart,
 }
 
 func init() {

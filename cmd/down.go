@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/build"
 	"github.com/spf13/cobra"
 )
 
@@ -15,11 +14,10 @@ var downCmd = &cobra.Command{
 	Use:   "down",
 	Short: "destroys a compose environment",
 	Long:  `destroys a compose environment`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("down called")
-	},
+	Run:   build.Down,
 }
 
 func init() {
 	RootCmd.AddCommand(downCmd)
+	downCmd.Flags().BoolP("clean", "R", false, "Cleans all containers and images on a successful down")
 }

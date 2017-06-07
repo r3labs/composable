@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/build"
 	"github.com/spf13/cobra"
 )
 
@@ -15,11 +14,10 @@ var cleanCmd = &cobra.Command{
 	Use:   "clean",
 	Short: "clean environment",
 	Long:  `clean all images and volumes associated with a compose envrionment`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("clean called")
-	},
+	Run:   build.Clean,
 }
 
 func init() {
 	RootCmd.AddCommand(cleanCmd)
+	cleanCmd.Flags().BoolP("force", "f", true, "Forces cleanup")
 }

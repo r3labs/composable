@@ -13,6 +13,10 @@ func (r *Repo) Branch() string {
 	return safe.String((*r)["branch"])
 }
 
+func (r *Repo) Image() string {
+	return safe.String((*r)["image"])
+}
+
 func (r *Repo) BuildPath() string {
 	return safe.String((*r)["build"])
 }

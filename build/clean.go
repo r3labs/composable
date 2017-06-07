@@ -6,6 +6,7 @@ package build
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/r3labs/composable/docker/client"
@@ -14,12 +15,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func Up(cmd *cobra.Command, args []string) {
-	var services []string
-
+func Clean(cmd *cobra.Command, args []string) {
 	composeEnv, _ := cmd.Flags().GetString("compose-env")
 	composeFile, _ := cmd.Flags().GetString("compose-file")
 	dockerHost, _ := cmd.Flags().GetString("docker-host")
+	force, _ := cmd.Flags().GetBool("force")
 
 	_, err := os.Stat(composeFile)
 	if err != nil {
@@ -41,24 +41,16 @@ func Up(cmd *cobra.Command, args []string) {
 		fatal(err)
 	}
 
-	for k, v := range dc.Services {
-		exists, err := cli.HasImage(v.Image())
+	err = c.Down(true)
+	if err != nil && !force {
+		fatal(err)
+	}
+
+	for _, service := range dc.Services {
+		fmt.Println("removing image: " + service.Image())
+		err := cli.DeleteImage(service.Image())
 		if err != nil {
 			fatal(err)
 		}
-
-		if v.BuildPath() != "" && !exists {
-			services = append(services, k)
-		}
-	}
-
-	err = c.Build(services, false)
-	if err != nil {
-		fatal(err)
-	}
-
-	err = c.Up()
-	if err != nil {
-		fatal(err)
 	}
 }

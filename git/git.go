@@ -101,7 +101,7 @@ func (r *Repo) CommitID() (string, error) {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return "", errors.New("could not get git revision id")
+		return "", errors.New("could not get git revision id " + r.Name())
 	}
 
 	id := string(output)

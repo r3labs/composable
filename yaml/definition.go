@@ -118,44 +118,55 @@ func (d *Definition) GenerateOutput(output string) error {
 		return err
 	}
 
+	err = d.ParseRepos()
+	if err != nil {
+		return err
+	}
+
 	tpl.Version = "2"
 
 	for _, repo := range d.Repos {
-		var image string
-
-		r := git.Repo{
-			Repo:        repo.Name(),
-			Destination: d.BuildPath,
-		}
-
-		commit, cerr := r.CommitID()
-		if cerr != nil {
-			return err
-		}
-
-		if d.Release.Version != "" {
-			image = fmt.Sprintf("%s/%s:%s", d.Release.Org, repo.Name(), d.Release.Version)
-		} else {
-			image = fmt.Sprintf("%s:%s", repo.Name(), commit)
-		}
-
-		repo["image"] = image
-
-		if d.Release.Version == "" {
-			repo["build"] = r.DeployPath()
-		}
-
 		tpl.Services[repo.Name()] = copyRepo(repo)
 
 		// clean map of any unsupported field
 		delete(tpl.Services[repo.Name()], "name")
 		delete(tpl.Services[repo.Name()], "path")
 		delete(tpl.Services[repo.Name()], "branch")
+		if d.Release.Version != "" {
+			delete(tpl.Services[repo.Name()], "build")
+		}
 	}
 
 	err = tpl.WriteFile(output)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (d *Definition) ParseRepos() error {
+	for i := range d.Repos {
+		var image string
+
+		r := git.Repo{
+			Repo:        d.Repos[i].Name(),
+			Destination: d.BuildPath,
+		}
+
+		commit, err := r.CommitID()
+		if err != nil {
+			return err
+		}
+
+		if d.Release.Version != "" {
+			image = fmt.Sprintf("%s/%s:%s", d.Release.Org, d.Repos[i].Name(), d.Release.Version)
+		} else {
+			image = fmt.Sprintf("%s:%s", d.Repos[i].Name(), commit)
+		}
+
+		d.Repos[i]["image"] = image
+		d.Repos[i]["build"] = r.DeployPath()
 	}
 
 	return nil
@@ -170,58 +181,3 @@ func copyRepo(r Repo) Repo {
 
 	return rx
 }
-
-/*
-
-// BuildImages builds all images defined on the definition
-func (d *Definition) BuildImages() error {
-	dh, err := dockerhost.New(d.opts.host)
-	if err != nil {
-		return err
-	}
-	dh.SetAuthCredentials(d.opts.username, d.opts.password)
-
-	err = dh.UpdateImages()
-	if err != nil {
-		return err
-	}
-
-	for _, repo := range d.Repos {
-		name := fmt.Sprintf("%s/%s:%s", d.opts.org, repo.Name, d.opts.releasever)
-		if dh.ImageExists(name) {
-			continue
-		}
-		fmt.Println("  " + name)
-		_, err := dh.BuildImage(name, repo.gitRepo.DeployPath())
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// UploadImages uploads all images defined on the definition
-func (d *Definition) UploadImages() error {
-	dh, err := dockerhost.New(d.opts.host)
-	if err != nil {
-		return err
-	}
-	dh.SetAuthCredentials(d.opts.username, d.opts.password)
-
-	for _, repo := range d.Repos {
-		name := fmt.Sprintf("%s/%s:%s", d.opts.org, repo.Name, d.opts.releasever)
-		fmt.Println("  " + name)
-
-		_, err := dh.PushImage(name)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-
-
-*/

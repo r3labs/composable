@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/howeyc/gopass"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -35,6 +36,13 @@ func WriteConfig(cpath string, config map[string]interface{}) error {
 	}
 
 	return ioutil.WriteFile(cpath, data, 0644)
+}
+
+func GetPassword(msg string) string {
+	fmt.Printf(msg + ": ")
+	pass, _ := gopass.GetPasswdMasked()
+	password := string(pass)
+	return password
 }
 
 func Set(cmd *cobra.Command, args []string) {

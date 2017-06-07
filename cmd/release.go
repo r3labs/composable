@@ -5,8 +5,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/r3labs/composable/build"
 	"github.com/spf13/cobra"
 )
 
@@ -17,11 +16,10 @@ var releaseCmd = &cobra.Command{
 	Long: `run a release of the target project.
 	This will build and push all images to docker hub.
 	On completion a docker-compose yaml file will be generated.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("release called")
-	},
+	Run: build.Release,
 }
 
 func init() {
 	RootCmd.AddCommand(releaseCmd)
+	releaseCmd.Flags().StringP("version", "v", "", "Release version")
 }

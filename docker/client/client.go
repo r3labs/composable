@@ -1,9 +1,12 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package client
 
 import (
 	"context"
 	"net/http"
-	"os"
 
 	"github.com/docker/docker/api"
 	"github.com/docker/docker/api/types"
@@ -58,8 +61,7 @@ func (c *Client) DeleteImage(image string) error {
 
 // CreateImage ...
 func (c *Client) BuildImage(name, path string) error {
-	buildContext, err := os.Open(path)
-	defer buildContext.Close()
+	tar, err := Tar(path)
 	if err != nil {
 		return err
 	}
@@ -68,6 +70,16 @@ func (c *Client) BuildImage(name, path string) error {
 		Tags: []string{name},
 	}
 
-	_, err = c.dc.ImageBuild(context.Background(), buildContext, opts)
+	_, err = c.dc.ImageBuild(context.Background(), tar, opts)
+	return err
+}
+
+func (c *Client) Login(username, password string) error {
+	opts := types.AuthConfig{
+		Username: username,
+		Password: password,
+	}
+
+	_, err := c.dc.RegistryLogin(context.Background(), opts)
 	return err
 }

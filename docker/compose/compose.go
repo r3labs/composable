@@ -1,12 +1,16 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package compose
 
 import (
 	"context"
 
-	"github.com/docker/libcompose/docker"
-	"github.com/docker/libcompose/docker/ctx"
-	"github.com/docker/libcompose/project"
-	"github.com/docker/libcompose/project/options"
+	"github.com/r3labs/libcompose/docker"
+	"github.com/r3labs/libcompose/docker/ctx"
+	"github.com/r3labs/libcompose/project"
+	"github.com/r3labs/libcompose/project/options"
 )
 
 type Compose struct {

@@ -6,6 +6,7 @@ package client
 
 import (
 	"context"
+	"io"
 	"net/http"
 
 	"github.com/docker/docker/api"
@@ -13,8 +14,10 @@ import (
 	"github.com/docker/docker/client"
 )
 
+// Client ...
 type Client struct {
-	dc *client.Client
+	dc    *client.Client
+	token string
 }
 
 // New ...
@@ -59,27 +62,39 @@ func (c *Client) DeleteImage(image string) error {
 	return err
 }
 
-// CreateImage ...
-func (c *Client) BuildImage(name, path string) error {
+// BuildImage ...
+func (c *Client) BuildImage(name, path string) (io.ReadCloser, error) {
 	tar, err := Tar(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	opts := types.ImageBuildOptions{
 		Tags: []string{name},
 	}
 
-	_, err = c.dc.ImageBuild(context.Background(), tar, opts)
-	return err
+	resp, err := c.dc.ImageBuild(context.Background(), tar, opts)
+	return resp.Body, err
 }
 
+// PushImage ...
+func (c *Client) PushImage(image string) (io.ReadCloser, error) {
+	opts := types.ImagePushOptions{
+		RegistryAuth: c.token,
+	}
+
+	return c.dc.ImagePush(context.Background(), image, opts)
+}
+
+// Login ...
 func (c *Client) Login(username, password string) error {
 	opts := types.AuthConfig{
 		Username: username,
 		Password: password,
 	}
 
-	_, err := c.dc.RegistryLogin(context.Background(), opts)
+	resp, err := c.dc.RegistryLogin(context.Background(), opts)
+	c.token = resp.IdentityToken
+
 	return err
 }

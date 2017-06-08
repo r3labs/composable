@@ -8,40 +8,55 @@ import (
 	"archive/tar"
 	"bytes"
 	"io"
-	"log"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
 
-func Tar(path string) (io.Reader, error) {
+// Tar ...
+func Tar(buildDir string) (io.Reader, error) {
+	files := make(map[string]os.FileInfo)
+
 	buf := new(bytes.Buffer)
 	tw := tar.NewWriter(buf)
 
-	files := []string{}
-	err := filepath.Walk(searchDir, func(path string, f os.FileInfo, err error) error {
-		fileList = append(fileList, path)
+	err := filepath.Walk(buildDir, func(path string, f os.FileInfo, err error) error {
+		if f.IsDir() {
+			return nil
+		}
+		files[path] = f
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
 
-	for _, file := range files {
+	for path, file := range files {
 		hdr := &tar.Header{
-			Name: file.Name,
-			Mode: 0600,
-			Size: int64(len(file.Body)),
+			Name: file.Name(),
+			Mode: int64(file.Mode()),
+			Size: file.Size(),
 		}
-		if err := tw.WriteHeader(hdr); err != nil {
-			log.Fatalln(err)
+
+		err = tw.WriteHeader(hdr)
+		if err != nil {
+			return nil, err
 		}
-		if _, err := tw.Write([]byte(file.Body)); err != nil {
-			log.Fatalln(err)
+
+		data, err := ioutil.ReadFile(path)
+		if err != nil {
+			return nil, err
 		}
-	}
-	// Make sure to check the error on Close.
-	if err := tw.Close(); err != nil {
-		log.Fatalln(err)
+
+		_, err = tw.Write(data)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	// Open the tar archive for reading.
-	r := bytes.NewReader(buf.Bytes())
-	tr := tar.NewReader(r)
+	if err := tw.Close(); err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(buf.Bytes()), nil
 }

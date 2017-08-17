@@ -7,6 +7,7 @@ package compose
 import (
 	"context"
 
+	"github.com/docker/libcompose/cli/logger"
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/docker/ctx"
 	"github.com/docker/libcompose/project"
@@ -17,11 +18,13 @@ type Compose struct {
 	Project project.APIProject
 }
 
+// New : Creates a new docker compose project
 func New(name, cpath string) (*Compose, error) {
 	project, err := docker.NewProject(&ctx.Context{
 		Context: project.Context{
-			ComposeFiles: []string{cpath},
-			ProjectName:  name,
+			ComposeFiles:  []string{cpath},
+			ProjectName:   name,
+			LoggerFactory: logger.NewColorLoggerFactory(),
 		},
 	}, nil)
 

@@ -27,9 +27,10 @@ func (r *Repo) URL() string {
 
 func (r *Repo) SetEnv(k, v string) {
 	if (*r)["environment"] == nil {
-		(*r)["environment"] = make(map[string]string)
+		(*r)["environment"] = make(map[string]interface{})
 	}
-	(*r)["environment"].(map[string]string)[k] = v
+
+	(*r)["environment"].(map[interface{}]interface{})[k] = v
 }
 
 func (r *Repo) SetBranch(branch string) {

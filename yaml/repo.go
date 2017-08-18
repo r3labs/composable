@@ -27,7 +27,7 @@ func (r *Repo) URL() string {
 
 func (r *Repo) SetEnv(k, v string) {
 	if (*r)["environment"] == nil {
-		(*r)["environment"] = make(map[string]interface{})
+		(*r)["environment"] = make(map[interface{}]interface{})
 	}
 
 	(*r)["environment"].(map[interface{}]interface{})[k] = v

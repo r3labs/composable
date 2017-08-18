@@ -6,18 +6,21 @@ package client
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"io"
 	"net/http"
 
 	"github.com/docker/docker/api"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/registry"
 )
 
 // Client ...
 type Client struct {
-	dc    *client.Client
-	token string
+	dc   *client.Client
+	auth *types.AuthConfig
 }
 
 // New ...
@@ -79,8 +82,13 @@ func (c *Client) BuildImage(name, path string) (io.ReadCloser, error) {
 
 // PushImage ...
 func (c *Client) PushImage(image string) (io.ReadCloser, error) {
+	data, err := json.Marshal(c.auth)
+	if err != nil {
+		return nil, err
+	}
+
 	opts := types.ImagePushOptions{
-		RegistryAuth: c.token,
+		RegistryAuth: base64.URLEncoding.EncodeToString(data),
 	}
 
 	return c.dc.ImagePush(context.Background(), image, opts)
@@ -88,13 +96,13 @@ func (c *Client) PushImage(image string) (io.ReadCloser, error) {
 
 // Login ...
 func (c *Client) Login(username, password string) error {
-	opts := types.AuthConfig{
-		Username: username,
-		Password: password,
+	c.auth = &types.AuthConfig{
+		Username:      username,
+		Password:      password,
+		ServerAddress: registry.IndexServer,
 	}
 
-	resp, err := c.dc.RegistryLogin(context.Background(), opts)
-	c.token = resp.IdentityToken
+	_, err := c.dc.RegistryLogin(context.Background(), *c.auth)
 
 	return err
 }

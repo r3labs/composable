@@ -9,14 +9,14 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 )
 
 // Repo stores all information about a git repo
 type Repo struct {
-	Repo           string
-	Destination    string
-	deploymentPath string
+	Repo        string
+	Destination string
 }
 
 // Clone sets up and clones a git repo
@@ -42,7 +42,7 @@ func (r *Repo) Name() string {
 
 // Exists checks if the repo exists in the destination
 func (r *Repo) Exists() bool {
-	_, err := os.Stat(r.deploymentPath)
+	_, err := os.Stat(r.DeployPath())
 	if err != nil {
 		return false
 	}
@@ -52,17 +52,17 @@ func (r *Repo) Exists() bool {
 
 // DeployPath gives the full path to the project/repo
 func (r *Repo) DeployPath() string {
-	return r.Destination + r.Name()
+	return path.Join(r.Destination, r.Name())
 }
 
 // Fetch all branches from remote
 func (r *Repo) Fetch() error {
 	cmd := exec.Command("git", "fetch")
-	cmd.Dir = r.deploymentPath
+	cmd.Dir = r.DeployPath()
 
 	_, err := cmd.Output()
 	if err != nil {
-		return errors.New("Could not fetch repo data")
+		return errors.New("could not fetch repo data: " + r.Name())
 	}
 
 	return nil
@@ -71,11 +71,11 @@ func (r *Repo) Fetch() error {
 // Checkout git branch
 func (r *Repo) Checkout(branch string) error {
 	cmd := exec.Command("git", "checkout", branch)
-	cmd.Dir = r.deploymentPath
+	cmd.Dir = r.DeployPath()
 
 	_, err := cmd.Output()
 	if err != nil {
-		return errors.New("Could not checkout branch")
+		return errors.New("could not checkout branch " + r.Name() + ":" + branch)
 	}
 
 	return nil
@@ -84,11 +84,11 @@ func (r *Repo) Checkout(branch string) error {
 // Pull from remote
 func (r *Repo) Pull() error {
 	cmd := exec.Command("git", "pull")
-	cmd.Dir = r.deploymentPath
+	cmd.Dir = r.DeployPath()
 
 	_, err := cmd.Output()
 	if err != nil {
-		return errors.New("Could not pull repo changes")
+		return errors.New("could not pull repo changes: " + r.Name())
 	}
 
 	return nil
@@ -97,11 +97,11 @@ func (r *Repo) Pull() error {
 // CommitID returns the commit id for the currently checked out branch
 func (r *Repo) CommitID() (string, error) {
 	cmd := exec.Command("git", "rev-parse", "HEAD")
-	cmd.Dir = r.deploymentPath
+	cmd.Dir = r.DeployPath()
 
 	output, err := cmd.Output()
 	if err != nil {
-		return "", errors.New("Could not get git revision id")
+		return "", errors.New("could not get git revision id " + r.Name())
 	}
 
 	id := string(output)
@@ -111,7 +111,7 @@ func (r *Repo) CommitID() (string, error) {
 // HasChanges returns true if there are local changes to a repo
 func (r *Repo) HasChanges() bool {
 	cmd := exec.Command("git", "status")
-	cmd.Dir = r.deploymentPath
+	cmd.Dir = r.DeployPath()
 
 	output, _ := cmd.Output()
 
@@ -128,7 +128,7 @@ func (r *Repo) Sync(branch string) error {
 
 	err = r.Checkout(branch)
 	if err != nil {
-		return fmt.Errorf("Could not checkout repo branch " + r.Name() + ":" + branch)
+		return fmt.Errorf("could not checkout repo branch " + r.Name() + ":" + branch)
 	}
 
 	err = r.Pull()
@@ -137,8 +137,6 @@ func (r *Repo) Sync(branch string) error {
 
 // Clone the repositort into the destination
 func (r *Repo) clone() error {
-	r.deploymentPath = r.Destination + r.Name()
-
 	// Clone the repo, if it doesn't exist
 	if !r.Exists() {
 		cmd := exec.Command("git", "clone", r.Repo)
@@ -146,7 +144,7 @@ func (r *Repo) clone() error {
 
 		_, err := cmd.Output()
 		if err != nil {
-			return fmt.Errorf("Could not clone repo %s", r.Name())
+			return fmt.Errorf("could not clone repo %s", r.Name())
 		}
 	}
 	return nil

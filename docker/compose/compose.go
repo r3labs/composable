@@ -85,12 +85,24 @@ func (c *Compose) Build(services []string, nocache bool) error {
 }
 
 func (c *Compose) Rebuild(services []string) error {
-	err := c.Stop(services)
+	err := c.Kill(services)
+	if err != nil {
+		return err
+	}
+
+	err = c.Project.Delete(context.Background(), options.Delete{}, services...)
 	if err != nil {
 		return err
 	}
 
 	err = c.Build(services, true)
+	if err != nil {
+		return err
+	}
+
+	opts := options.Create{ForceRecreate: true}
+
+	err = c.Project.Create(context.Background(), opts, services...)
 	if err != nil {
 		return err
 	}

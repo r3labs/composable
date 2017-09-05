@@ -57,7 +57,7 @@ func init() {
 	RootCmd.PersistentFlags().StringP("docker-org", "O", viper.GetString("docker.org"), "Docker organisation used for releases")
 	RootCmd.PersistentFlags().StringP("docker-user", "U", viper.GetString("docker.user"), "Docker user used for releases")
 	RootCmd.PersistentFlags().StringP("docker-host", "H", viper.GetString("docker.host"), "Docker host used for builds")
-	RootCmd.PersistentFlags().StringP("docker-registry", "R", viper.GetString("docker.registry"), "Docker host used for builds")
+	RootCmd.PersistentFlags().StringP("docker-registry", "L", viper.GetString("docker.registry"), "Docker host used for builds")
 
 	viper.BindPFlag("build.compose-env", RootCmd.PersistentFlags().Lookup("compose-env"))
 	viper.BindPFlag("build.compose-file", RootCmd.PersistentFlags().Lookup("compose-file"))

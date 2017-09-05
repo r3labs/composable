@@ -19,13 +19,18 @@ import (
 
 // Client ...
 type Client struct {
-	dc   *client.Client
-	auth *types.AuthConfig
+	registry string
+	dc       *client.Client
+	auth     *types.AuthConfig
 }
 
 // New ...
-func New(host string) (*Client, error) {
+func New(host, reg string) (*Client, error) {
 	var hc *http.Client
+
+	if reg == "" {
+		reg = registry.IndexServer
+	}
 
 	cli, err := client.NewClient(host, api.DefaultVersion, hc, nil)
 	if err != nil {
@@ -33,7 +38,8 @@ func New(host string) (*Client, error) {
 	}
 
 	return &Client{
-		dc: cli,
+		dc:       cli,
+		registry: reg,
 	}, nil
 }
 
@@ -99,7 +105,7 @@ func (c *Client) Login(username, password string) error {
 	c.auth = &types.AuthConfig{
 		Username:      username,
 		Password:      password,
-		ServerAddress: registry.IndexServer,
+		ServerAddress: c.registry,
 	}
 
 	_, err := c.dc.RegistryLogin(context.Background(), *c.auth)

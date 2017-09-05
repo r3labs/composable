@@ -49,6 +49,7 @@ func init() {
 	viper.SetDefault("build.compose-file", "./docker-compose.yml")
 	viper.SetDefault("build.path", "./composable")
 	viper.SetDefault("docker.host", "unix:///var/run/docker.sock")
+	viper.SetDefault("docker.registry", "https://index.docker.io/v1/")
 
 	RootCmd.PersistentFlags().StringP("compose-env", "e", viper.GetString("build.compose-env"), "Name of the compose environment")
 	RootCmd.PersistentFlags().StringP("compose-file", "o", viper.GetString("build.compose-file"), "Path to docker-compose.yml")
@@ -56,6 +57,7 @@ func init() {
 	RootCmd.PersistentFlags().StringP("docker-org", "O", viper.GetString("docker.org"), "Docker organisation used for releases")
 	RootCmd.PersistentFlags().StringP("docker-user", "U", viper.GetString("docker.user"), "Docker user used for releases")
 	RootCmd.PersistentFlags().StringP("docker-host", "H", viper.GetString("docker.host"), "Docker host used for builds")
+	RootCmd.PersistentFlags().StringP("docker-registry", "R", viper.GetString("docker.registry"), "Docker host used for builds")
 
 	viper.BindPFlag("build.compose-env", RootCmd.PersistentFlags().Lookup("compose-env"))
 	viper.BindPFlag("build.compose-file", RootCmd.PersistentFlags().Lookup("compose-file"))

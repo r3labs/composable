@@ -20,6 +20,7 @@ func Up(cmd *cobra.Command, args []string) {
 	composeEnv, _ := cmd.Flags().GetString("compose-env")
 	composeFile, _ := cmd.Flags().GetString("compose-file")
 	dockerHost, _ := cmd.Flags().GetString("docker-host")
+	dockerRegistry, _ := cmd.Flags().GetString("docker-registry")
 
 	_, err := os.Stat(composeFile)
 	if err != nil {
@@ -36,7 +37,7 @@ func Up(cmd *cobra.Command, args []string) {
 		fatal(err)
 	}
 
-	cli, err := client.New(dockerHost)
+	cli, err := client.New(dockerHost, dockerRegistry)
 	if err != nil {
 		fatal(err)
 	}

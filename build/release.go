@@ -20,6 +20,7 @@ func Release(cmd *cobra.Command, args []string) {
 	dockerOrg, _ := cmd.Flags().GetString("docker-org")
 	dockerUser, _ := cmd.Flags().GetString("docker-user")
 	dockerHost, _ := cmd.Flags().GetString("docker-host")
+	dockerRegistry, _ := cmd.Flags().GetString("docker-registry")
 	version, _ := cmd.Flags().GetString("version")
 
 	if buildPath == "" {
@@ -30,7 +31,7 @@ func Release(cmd *cobra.Command, args []string) {
 		fatal(errors.New("release must specify a definition and template file"))
 	}
 
-	cli, err := client.New(dockerHost)
+	cli, err := client.New(dockerHost, dockerRegistry)
 	if err != nil {
 		fatal(err)
 	}

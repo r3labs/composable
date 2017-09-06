@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Tar ...
@@ -33,7 +34,7 @@ func Tar(buildDir string) (io.Reader, error) {
 
 	for path, file := range files {
 		hdr := &tar.Header{
-			Name: file.Name(),
+			Name: strings.TrimPrefix(strings.Replace(path, buildDir, "", -1), string(filepath.Separator)),
 			Mode: int64(file.Mode()),
 			Size: file.Size(),
 		}

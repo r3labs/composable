@@ -17,8 +17,9 @@ import (
 // Definition of repos
 type Definition struct {
 	Release struct {
-		Version string
-		Org     string
+		Version  string
+		Org      string
+		Registry string
 	}
 	Template  string
 	BuildPath string
@@ -160,7 +161,7 @@ func (d *Definition) ParseRepos() error {
 		}
 
 		if d.Release.Version != "" {
-			image = fmt.Sprintf("%s/%s:%s", d.Release.Org, d.Repos[i].Name(), d.Release.Version)
+			image = fmt.Sprintf("%s/%s/%s:%s", d.Release.Registry, d.Release.Org, d.Repos[i].Name(), d.Release.Version)
 		} else {
 			image = fmt.Sprintf("%s:%s", d.Repos[i].Name(), commit)
 		}

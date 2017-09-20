@@ -50,6 +50,7 @@ func Release(cmd *cobra.Command, args []string) {
 	d.BuildPath = buildPath
 	d.Release.Org = dockerOrg
 	d.Release.Version = version
+	d.Release.Registry = dockerRegistry
 	d.Template = args[1]
 
 	fmt.Println("cloning repos:")

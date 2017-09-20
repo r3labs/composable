@@ -160,9 +160,12 @@ func (d *Definition) ParseRepos() error {
 			return err
 		}
 
-		if d.Release.Version != "" {
+		switch {
+		case d.Release.Registry != "https://index.docker.io/v1/" && d.Release.Version != "":
 			image = fmt.Sprintf("%s/%s/%s:%s", d.Release.Registry, d.Release.Org, d.Repos[i].Name(), d.Release.Version)
-		} else {
+		case d.Release.Version != "":
+			image = fmt.Sprintf("%s/%s:%s", d.Release.Org, d.Repos[i].Name(), d.Release.Version)
+		default:
 			image = fmt.Sprintf("%s:%s", d.Repos[i].Name(), commit)
 		}
 

@@ -24,3 +24,4 @@ _testmain.go
 *.prof
 composable
 docker-compose.yml
+docker-compose.enterprise.yml

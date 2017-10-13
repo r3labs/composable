@@ -19,6 +19,7 @@ func Release(cmd *cobra.Command, args []string) {
 	buildPath, _ := cmd.Flags().GetString("build-path")
 	dockerOrg, _ := cmd.Flags().GetString("docker-org")
 	dockerUser, _ := cmd.Flags().GetString("docker-user")
+	dockerPassword, _ := cmd.Flags().GetString("docker-password")
 	dockerHost, _ := cmd.Flags().GetString("docker-host")
 	dockerRegistry, _ := cmd.Flags().GetString("docker-registry")
 	version, _ := cmd.Flags().GetString("version")
@@ -36,8 +37,11 @@ func Release(cmd *cobra.Command, args []string) {
 		fatal(err)
 	}
 
-	pwd := config.GetPassword("please enter your docker registry password")
-	err = cli.Login(dockerUser, pwd)
+	if dockerPassword == "" {
+		dockerPassword = config.GetPassword("please enter your docker registry password")
+	}
+
+	err = cli.Login(dockerUser, dockerPassword)
 	if err != nil {
 		fatal(err)
 	}

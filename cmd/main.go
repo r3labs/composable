@@ -56,6 +56,7 @@ func init() {
 	RootCmd.PersistentFlags().StringP("build-path", "P", viper.GetString("build.path"), "Path to deploy git repos")
 	RootCmd.PersistentFlags().StringP("docker-org", "O", viper.GetString("docker.org"), "Docker organisation used for releases")
 	RootCmd.PersistentFlags().StringP("docker-user", "U", viper.GetString("docker.user"), "Docker user used for releases")
+	RootCmd.PersistentFlags().StringP("docker-password", "p", viper.GetString("docker.password"), "Docker password used for releases")
 	RootCmd.PersistentFlags().StringP("docker-host", "H", viper.GetString("docker.host"), "Docker host used for builds")
 	RootCmd.PersistentFlags().StringP("docker-registry", "L", viper.GetString("docker.registry"), "Docker host used for builds")
 

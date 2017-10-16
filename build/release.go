@@ -85,6 +85,17 @@ func Release(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println("generating output")
+	err = d.GenerateOutput("docker-compose.enterprise.yml")
+	if err != nil {
+		fatal(err)
+	}
+
+	for _, repo := range d.Repos {
+		if repo["edition"] == "enterprise" {
+			d.ExcludeRepo(repo.Name())
+		}
+	}
+
 	err = d.GenerateOutput("docker-compose.yml")
 	if err != nil {
 		fatal(err)

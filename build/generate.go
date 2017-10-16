@@ -19,6 +19,7 @@ func Generate(cmd *cobra.Command, args []string) {
 	global, _ := cmd.Flags().GetString("global-branch")
 	output, _ := cmd.Flags().GetString("compose-file")
 	buildpath, _ := cmd.Flags().GetString("build-path")
+	edition, _ := cmd.Flags().GetString("edition")
 
 	if buildpath == "" {
 		fatal(errors.New("no build path specified"))
@@ -37,6 +38,14 @@ func Generate(cmd *cobra.Command, args []string) {
 	d.BuildPath = buildpath
 	d.Environment(environment)
 	d.Overrides(overrides, excludes, global)
+
+	if edition == "community" {
+		for _, repo := range d.Repos {
+			if repo["edition"] == "enterprise" {
+				d.ExcludeRepo(repo.Name())
+			}
+		}
+	}
 
 	fmt.Println("cloning repos:")
 	err = CloneRepos(d, buildpath)

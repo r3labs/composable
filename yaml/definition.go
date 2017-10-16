@@ -114,46 +114,34 @@ func GetOverrides(overrides string) map[string]string {
 
 // GenerateOutput creates a file from the definition and template.yml
 func (d *Definition) GenerateOutput(output string) error {
-	editions := []string{"community", "enterprise"}
+	tpl, err := LoadTemplate(d.Template)
+	if err != nil {
+		return err
+	}
 
-	for _, edition := range editions {
-		tpl, err := LoadTemplate(d.Template)
-		if err != nil {
-			return err
+	err = d.ParseRepos()
+	if err != nil {
+		return err
+	}
+
+	tpl.Version = "2"
+
+	for _, repo := range d.Repos {
+		tpl.Services[repo.Name()] = copyRepo(repo)
+
+		// clean map of any unsupported field
+		delete(tpl.Services[repo.Name()], "name")
+		delete(tpl.Services[repo.Name()], "path")
+		delete(tpl.Services[repo.Name()], "branch")
+		delete(tpl.Services[repo.Name()], "edition")
+		if d.Release.Version != "" {
+			delete(tpl.Services[repo.Name()], "build")
 		}
+	}
 
-		err = d.ParseRepos()
-		if err != nil {
-			return err
-		}
-
-		tpl.Version = "2"
-
-		for _, repo := range d.Repos {
-			if edition == "community" && repo["edition"] == "enterprise" {
-				continue
-			}
-
-			tpl.Services[repo.Name()] = copyRepo(repo)
-
-			// clean map of any unsupported field
-			delete(tpl.Services[repo.Name()], "name")
-			delete(tpl.Services[repo.Name()], "path")
-			delete(tpl.Services[repo.Name()], "branch")
-			delete(tpl.Services[repo.Name()], "edition")
-			if d.Release.Version != "" {
-				delete(tpl.Services[repo.Name()], "build")
-			}
-		}
-
-		if edition == "enterprise" {
-			output = strings.TrimSuffix(output, ".yml") + ".enterprise.yml"
-		}
-
-		err = tpl.WriteFile(output)
-		if err != nil {
-			return err
-		}
+	err = tpl.WriteFile(output)
+	if err != nil {
+		return err
 	}
 
 	return nil

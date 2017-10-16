@@ -23,4 +23,5 @@ func init() {
 	generateCmd.Flags().StringP("excludes", "X", "", "Excludes specified repos")
 	generateCmd.Flags().StringP("global-branch", "G", "", "Overides the branch for all repos, excluding ones specified in overides")
 	generateCmd.Flags().StringP("environment", "E", "", "Sets an environmental variable for all docker containers")
+	generateCmd.Flags().StringP("edition", "", "community", "Set edition type community/enterprise")
 }

@@ -25,16 +25,20 @@ make test
 To generate a docker-compose file (default: docker-compose.yml), run the following command:
 
 ```
-$ composable gen definition.yml template.yml
+# community edition
+$ composable generate definition.yml template.yml
+
+# enterprise edition
+$ composable generate --edition enterprise definition.yml template.yml
 ```
 
 This will deploy git repos to the deployment directory (default: /tmp/composable). Please note, this directory must exist!
 
 
-To run override a branch specified in the definition yaml, you can run:
+To override a specific branch in the definition yaml, you can run:
 
 ```
-$ composable gen -b REPONAME:BRANCH definition.yml template.yml
+$ composable generate -b REPONAME:BRANCH definition.yml template.yml
 ```
 
 Substitutiong `REPONAME` for the name of the repo and `BRANCH` for the desired branch you want to use.
@@ -46,10 +50,10 @@ $ composable --help
 
 ### Running a release
 
-To create a release and publish docker images to dockerhub, you can run:
+To create a release and publish images to a container registry, you can run:
 
 ```
-$ composable release -org DOCKERORG -version VERSION definition.yml template.yml
+$ composable release -v 1.x.x -L quay.io -O r3labs -U john definition.yml template.yml
 ```
 
 This will:

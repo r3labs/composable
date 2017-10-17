@@ -59,7 +59,7 @@ $ composable release -v 1.x.x -L quay.io -O r3labs -U john definition.yml templa
 This will:
 - Clone all repositories
 - Build all docker images, tagged as the release version
-- Upload all docker images to docker hub
+- Upload all docker images to the container registry
 - Create a release docker-compose file with images tagged to the release version
 
 Please note, you will be asked for your docker credentials upon running this command

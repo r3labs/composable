@@ -40,9 +40,9 @@ func Generate(cmd *cobra.Command, args []string) {
 	d.Overrides(overrides, excludes, global)
 
 	if edition == "community" {
-		for _, repo := range d.Repos {
-			if repo["edition"] == "enterprise" {
-				d.ExcludeRepo(repo.Name())
+		for i := len(d.Repos) - 1; i >= 0; i-- {
+			if d.Repos[i]["edition"] == "enterprise" {
+				d.ExcludeRepo(d.Repos[i].Name())
 			}
 		}
 	}

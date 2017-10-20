@@ -85,15 +85,21 @@ func Release(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println("generating output")
+	for _, repo := range d.Repos {
+		repo.SetEnv("ERNEST_EDITION", "enterprise")
+	}
+
 	err = d.GenerateOutput("docker-compose.enterprise.yml")
 	if err != nil {
 		fatal(err)
 	}
 
-	for _, repo := range d.Repos {
-		if repo["edition"] == "enterprise" {
-			d.ExcludeRepo(repo.Name())
+	for i := len(d.Repos) - 1; i >= 0; i-- {
+		if d.Repos[i]["edition"] == "enterprise" {
+			d.ExcludeRepo(d.Repos[i].Name())
+			continue
 		}
+		d.Repos[i].SetEnv("ERNEST_EDITION", "community")
 	}
 
 	err = d.GenerateOutput("docker-compose.yml")

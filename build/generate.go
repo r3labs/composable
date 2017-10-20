@@ -39,6 +39,10 @@ func Generate(cmd *cobra.Command, args []string) {
 	d.Environment(environment)
 	d.Overrides(overrides, excludes, global)
 
+	for _, repo := range d.Repos {
+		repo.SetEnv("ERNEST_EDITION", edition)
+	}
+
 	if edition == "community" {
 		for i := len(d.Repos) - 1; i >= 0; i-- {
 			if d.Repos[i]["edition"] == "enterprise" {

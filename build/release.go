@@ -22,6 +22,7 @@ func Release(cmd *cobra.Command, args []string) {
 	dockerPassword, _ := cmd.Flags().GetString("docker-password")
 	dockerHost, _ := cmd.Flags().GetString("docker-host")
 	dockerRegistry, _ := cmd.Flags().GetString("docker-registry")
+	global, _ := cmd.Flags().GetString("global-branch")
 	version, _ := cmd.Flags().GetString("version")
 
 	if buildPath == "" {
@@ -56,6 +57,9 @@ func Release(cmd *cobra.Command, args []string) {
 	d.Release.Version = version
 	d.Release.Registry = dockerRegistry
 	d.Template = args[1]
+	if global != "" {
+		d.Overrides("", "", global)
+	}
 
 	fmt.Println("cloning repos:")
 	err = CloneRepos(d, buildPath)

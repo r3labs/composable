@@ -22,4 +22,5 @@ var releaseCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(releaseCmd)
 	releaseCmd.Flags().StringP("version", "v", "", "Release version")
+	releaseCmd.Flags().StringP("global-branch", "G", "", "Overides the branch for all repos. Used when producing a pre-release build")
 }

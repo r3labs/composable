@@ -10,5 +10,13 @@ deps:
 	go get github.com/spf13/viper
 	go get github.com/mitchellh/go-homedir
 
+dev-deps: deps
+	go get github.com/smartystreets/goconvey
+	go get github.com/alecthomas/gometalinter
+	gometalinter --install
+	
+lint:
+	gometalinter --config .linter.conf
+
 test:
 	go test -v ./... --cover

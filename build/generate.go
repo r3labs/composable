@@ -7,6 +7,7 @@ package build
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/r3labs/composable/yaml"
 	"github.com/spf13/cobra"
@@ -52,6 +53,10 @@ func Generate(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println("cloning repos:")
+	// Check if buildpath exists
+	if _, err := os.Stat(buildpath); os.IsNotExist(err) {
+		fatal(errors.New("Specified '" + buildpath + "' folder does not exist"))
+	}
 	err = CloneRepos(d, buildpath)
 	if err != nil {
 		fatal(err)

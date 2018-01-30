@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/r3labs/composable/cmd"
@@ -19,5 +20,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	config.WriteConfig(viper.ConfigFileUsed(), viper.AllSettings())
+	if err := config.WriteConfig(viper.ConfigFileUsed(), viper.AllSettings()); err != nil {
+		log.Println(err)
+	}
 }

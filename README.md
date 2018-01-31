@@ -53,7 +53,7 @@ $ composable --help
 To create a release and publish images to a container registry, you can run:
 
 ```
-$ composable release -v 1.x.x -L quay.io -O r3labs definition.yml template.yml
+$ composable release -v 1.x.x -L quay.io -O ernest definition.yml template.yml
 ```
 
 This will:
